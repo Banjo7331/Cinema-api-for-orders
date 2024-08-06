@@ -1,11 +1,11 @@
 package springboot.cinemaapi.cinemaapifororders.service.order;
 
 import springboot.cinemaapi.cinemaapifororders.entity.order.Order;
-import springboot.cinemaapi.cinemaapifororders.entity.order.Product;
-import springboot.cinemaapi.cinemaapifororders.payload.dto.OrderDto;
-
-import java.util.List;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.order.OrderDto;
 
 public interface OrderService {
-    Order createOrder(OrderDto order);
+    OrderDto createOrder(OrderDto order);
+    OrderDto updateOrder(Long id, OrderDto orderDto);
+    OrderDto getOrderById(Long orderId);
+    void deleteOrderById(Long id);
 }

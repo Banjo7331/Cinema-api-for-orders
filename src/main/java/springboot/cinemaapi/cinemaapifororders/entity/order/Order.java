@@ -29,7 +29,7 @@ public class Order {
     private String couponCode;
 
     @Column(nullable = false)
-    private boolean isReservationForMovie;
+    private Boolean isReservationForMovie;
 
     @Column(nullable = false)
     private BigDecimal totalPrice;

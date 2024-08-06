@@ -1,17 +1,15 @@
 package springboot.cinemaapi.cinemaapifororders.service.order.impl;
 
-import org.aspectj.weaver.ast.Or;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import springboot.cinemaapi.cinemaapifororders.entity.order.Order;
 import springboot.cinemaapi.cinemaapifororders.entity.order.Product;
-import springboot.cinemaapi.cinemaapifororders.payload.dto.OrderDto;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.order.OrderDto;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.order.ProductDto;
 import springboot.cinemaapi.cinemaapifororders.repository.OrderRepository;
-import springboot.cinemaapi.cinemaapifororders.repository.ProductRepository;
 import springboot.cinemaapi.cinemaapifororders.service.order.OrderService;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -28,23 +26,56 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Order createOrder(OrderDto orderDto) {
+    public OrderDto createOrder(OrderDto orderDto) {
 
 
         Order order = modelMapper.map(orderDto,Order.class);
 
-        order.setTotalPrice(calculatePrice(order));
+        order.setTotalPrice(calculatePrice(orderDto));
 
-        return orderRepository.save(order);
+        return modelMapper.map(orderRepository.save(order), OrderDto.class);
     }
 
-    private BigDecimal calculatePrice(Order order) {
+    @Override
+    public OrderDto updateOrder(Long id, OrderDto orderDto) {
+        Order order = orderRepository.findById(id).orElseThrow(()-> new RuntimeException("Order not found"));
+
+        Order updatedOrder = modelMapper.map(orderDto, Order.class);
+
+        order.setTotalPrice(calculatePrice(orderDto));
+        order.setOrderItems(updatedOrder.getOrderItems());
+        order.setCouponCode(orderDto.getCouponCode());
+        order.setIsReservationForMovie(orderDto.getIsReservationForMovie());
+
+        orderRepository.save(order);
+
+        return modelMapper.map(order, OrderDto.class);
+    }
+
+
+    @Override
+    public OrderDto getOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(()-> new RuntimeException("Order not found"));
+
+        return modelMapper.map(order,OrderDto.class);
+    }
+
+    @Override
+    public void deleteOrderById(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(()-> new RuntimeException("Order not found"));
+
+        orderRepository.delete(order);
+    }
+
+    private BigDecimal calculatePrice(OrderDto order) {
         BigDecimal price = BigDecimal.ZERO;
 
-        for(Product product : order.getOrderItems()){
+        for(ProductDto product : order.getOrderItems()){
             price = price.add(product.getPrice());
         }
 
         return price;
     }
+
+
 }
