@@ -1,0 +1,46 @@
+package springboot.cinemaapi.cinemaapifororders.entity.reservation;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.validator.constraints.br.CPF;
+
+import java.util.Date;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "movie")
+public class Movie {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private Long lengthInMinutes;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String category;
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private Date premiereDate;
+
+
+    @Column(nullable = false)
+    private Date endOfPlayingDate;
+
+    @Column(nullable = false)
+    private Integer minimumAgeToWatch;
+
+}
