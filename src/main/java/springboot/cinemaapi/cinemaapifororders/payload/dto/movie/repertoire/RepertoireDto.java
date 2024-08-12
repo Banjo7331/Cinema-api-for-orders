@@ -1,13 +1,11 @@
-package springboot.cinemaapi.cinemaapifororders.payload.dto.movie;
+package springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -18,7 +16,7 @@ public class RepertoireDto {
 
     private Long id;
 
-    private Date date;
+    private LocalDate date;
 
     private List<SeanceDto> reservationList;
 }

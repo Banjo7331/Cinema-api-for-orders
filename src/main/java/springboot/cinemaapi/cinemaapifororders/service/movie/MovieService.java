@@ -1,6 +1,5 @@
 package springboot.cinemaapi.cinemaapifororders.service.movie;
 
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.MovieDto;
 
 import java.util.List;

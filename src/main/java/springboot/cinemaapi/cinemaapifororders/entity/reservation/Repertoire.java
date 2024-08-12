@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "repertoir_full_day")
+@Table(name = "repertoir_full_day",uniqueConstraints = {@UniqueConstraint(columnNames = {"date"})})
 public class Repertoire {
 
     @Id
@@ -23,7 +24,7 @@ public class Repertoire {
 
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
-    private Date date;
+    private LocalDate date;
 
     @OneToMany(mappedBy = "repertoire", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seance> reservationList;

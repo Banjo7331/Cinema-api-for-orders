@@ -1,13 +1,10 @@
-package springboot.cinemaapi.cinemaapifororders.payload.dto.movie;
+package springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Repertoire;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Room;
 
 import java.time.LocalTime;
 

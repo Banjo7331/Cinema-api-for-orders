@@ -42,9 +42,9 @@ public class MovieServiceImpl implements MovieService {
     public MovieDto addMovie(MovieDto movieDto) {
         Movie movie = modelMapper.map(movieDto, Movie.class);
 
-        movieRepository.save(movie);
+        Movie cretedMovie = movieRepository.save(movie);
 
-        return modelMapper.map(movie, MovieDto.class);
+        return modelMapper.map(cretedMovie, MovieDto.class);
     }
 
     @Override
