@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface SeanceService {
     List<SeanceDto> getSeancesForRepertoire(Long repertoireId);
+    SeanceDto getSeanceById(Long seanceId, Long repertoireId);
+    SeanceDto updateSeance(Long seanceId, Long repertoireId,SeanceDto seanceDto);
+    SeanceDto createSeance(Long repertoireId, SeanceDto seanceDto);
+    void deleteSeance(Long seanceId, Long repertoireId);
 }

@@ -26,7 +26,6 @@ public class Seance {
     @Column(nullable = false)
     private LocalTime hourOfStart;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
     private Movie movie;
 

@@ -6,9 +6,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface RepertoireService {
+    RepertoireDto getRepertoireById(Long repertoireId);
     RepertoireDto getRepertoireByTheDate(LocalDate date);
     List<RepertoireDto> getFirst7Repertoires(LocalDate date);
     RepertoireDto createRepertoire(RepertoireDto repertoireDto);
-    RepertoireDto updateRepertoire(RepertoireDto repertoireDto);
+    RepertoireDto updateRepertoire(Long repertoireId,RepertoireDto repertoireDto);
+    void deleteRepertoireById(Long id);
     void deleteRepertoiresOlderThanWeek();
 }

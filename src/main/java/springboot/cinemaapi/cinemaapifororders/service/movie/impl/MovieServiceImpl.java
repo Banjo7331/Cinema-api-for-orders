@@ -7,6 +7,7 @@ import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.MovieDto;
 import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
 import springboot.cinemaapi.cinemaapifororders.service.movie.MovieService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,5 +75,11 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public void deleteAllMovies() {
         movieRepository.deleteAll();
+    }
+
+    @Override
+    public void deleteExpiredMovies() {
+        LocalDate today = LocalDate.now();
+        movieRepository.deleteMoviesByEndOfPlayingDateBefore(today);
     }
 }

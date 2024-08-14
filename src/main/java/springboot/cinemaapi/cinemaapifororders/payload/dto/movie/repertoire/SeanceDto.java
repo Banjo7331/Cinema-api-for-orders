@@ -20,9 +20,8 @@ public class SeanceDto {
 
     private LocalTime hourOfStart;
 
+    private Long movieId;
 
-    private Movie movieId;
-
-    private Integer roomId;
+    private Long roomId;
 
 }

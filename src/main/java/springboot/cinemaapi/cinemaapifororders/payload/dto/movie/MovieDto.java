@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -23,9 +24,9 @@ public class MovieDto {
 
     private String description;
 
-    private Date premiereDate;
+    private LocalDate premiereDate;
 
-    private Date endOfPlayingDate;
+    private LocalDate endOfPlayingDate;
 
     private Integer minimumAgeToWatch;
 }

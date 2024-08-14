@@ -55,4 +55,11 @@ public class MovieController {
 
         return ResponseEntity.ok("All movies Deleted from database successfully");
     }
+
+    @DeleteMapping("/expired")
+    public ResponseEntity<String> deleteExpiredMovies() {
+        movieService.deleteExpiredMovies();
+
+        return ResponseEntity.ok("All expired movies Deleted from database successfully");
+    }
 }

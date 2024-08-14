@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -34,11 +35,11 @@ public class Movie {
     private String description;
 
     @Column(nullable = false)
-    private Date premiereDate;
+    private LocalDate premiereDate;
 
 
     @Column(nullable = false)
-    private Date endOfPlayingDate;
+    private LocalDate endOfPlayingDate;
 
     @Column(nullable = false)
     private Integer minimumAgeToWatch;

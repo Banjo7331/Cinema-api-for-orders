@@ -2,6 +2,7 @@ package springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.RepertoireDto;
 import springboot.cinemaapi.cinemaapifororders.repository.RepertoireRepository;
@@ -21,6 +22,13 @@ public class RepertoireServiceImpl implements RepertoireService {
     public RepertoireServiceImpl(RepertoireRepository repertoireRepository, ModelMapper modelMapper) {
         this.repertoireRepository = repertoireRepository;
         this.modelMapper = modelMapper;
+    }
+
+    @Override
+    public RepertoireDto getRepertoireById(Long repertoireId) {
+        Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
+
+        return modelMapper.map(repertoire, RepertoireDto.class);
     }
 
     @Override
@@ -54,16 +62,23 @@ public class RepertoireServiceImpl implements RepertoireService {
     }
 
     @Override
-    public RepertoireDto updateRepertoire(RepertoireDto repertoireDto) {
+    public RepertoireDto updateRepertoire(Long repertoireId,RepertoireDto repertoireDto) {
 
-        Repertoire repertoire = repertoireRepository.findById(repertoireDto.getId()).orElseThrow(()-> new RuntimeException("Repertoire not found"));
+        Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
         repertoire.setDate(repertoireDto.getDate());
 
 
-       repertoireRepository.save(repertoire);
+        repertoireRepository.save(repertoire);
 
         return modelMapper.map(repertoire, RepertoireDto.class);
+    }
+
+    @Override
+    public void deleteRepertoireById(Long id) {
+        Repertoire repertoire = repertoireRepository.findById(id).orElseThrow(()-> new RuntimeException("Repertoire not found"));
+
+        repertoireRepository.delete(repertoire);
     }
 
     @Override

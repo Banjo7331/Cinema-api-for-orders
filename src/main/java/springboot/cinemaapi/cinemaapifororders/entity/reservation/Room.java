@@ -19,16 +19,16 @@ public class Room {
     private Long id;
 
     @Column(nullable = false)
-    private Integer number;
+    private int number;
 
     @Column(nullable = false)
-    private Integer numberOfRows;
+    private int numberOfRows;
 
     @Column(nullable = false)
-    private Boolean special;
+    private boolean special;
 
     @Column(nullable = false)
-    private Boolean available;
+    private boolean available;
 
 
 }

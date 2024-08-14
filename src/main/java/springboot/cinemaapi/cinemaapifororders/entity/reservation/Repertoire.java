@@ -27,5 +27,5 @@ public class Repertoire {
     private LocalDate date;
 
     @OneToMany(mappedBy = "repertoire", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Seance> reservationList;
+    private List<Seance> seancesList;
 }

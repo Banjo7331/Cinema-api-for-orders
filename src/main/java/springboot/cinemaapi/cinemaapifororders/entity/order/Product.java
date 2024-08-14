@@ -1,6 +1,5 @@
 package springboot.cinemaapi.cinemaapifororders.entity.order;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

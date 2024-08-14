@@ -18,5 +18,5 @@ public class RepertoireDto {
 
     private LocalDate date;
 
-    private List<SeanceDto> reservationList;
+    private List<SeanceDto> seancesList;
 }

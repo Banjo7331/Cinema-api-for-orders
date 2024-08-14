@@ -19,7 +19,12 @@ public class RepertoireController {
         this.repertoireService = repertoireService;
     }
 
-    @GetMapping()
+    @GetMapping("/{id}")
+    public ResponseEntity<RepertoireDto> getRepertoireById(@PathVariable Long id) {
+
+        return ResponseEntity.ok(repertoireService.getRepertoireById(id));
+    }
+    @GetMapping("/date")
     public ResponseEntity<RepertoireDto> getRepertoireByTheDate(@RequestParam LocalDate date) {
 
         return ResponseEntity.ok(repertoireService.getRepertoireByTheDate(date));
@@ -36,10 +41,10 @@ public class RepertoireController {
         return new ResponseEntity<>(repertoireService.createRepertoire(repertoireDto), HttpStatus.CREATED);
     }
 
-    @PutMapping()
-    public ResponseEntity<RepertoireDto> updateRepertoire(@RequestBody RepertoireDto repertoireDto) {
+    @PutMapping("/{id}")
+    public ResponseEntity<RepertoireDto> updateRepertoire(@RequestBody RepertoireDto repertoireDto, @PathVariable Long id) {
 
-        return ResponseEntity.ok(repertoireService.updateRepertoire(repertoireDto));
+        return ResponseEntity.ok(repertoireService.updateRepertoire(id,repertoireDto));
     }
 
     @DeleteMapping()
@@ -47,5 +52,11 @@ public class RepertoireController {
 
         repertoireService.deleteRepertoiresOlderThanWeek();
         return ResponseEntity.ok("Week of previous repertoires was deleted");
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRepertoireById(@PathVariable Long id) {
+
+        repertoireService.deleteRepertoireById(id);
+        return ResponseEntity.ok("Repertoire was deleted");
     }
 }

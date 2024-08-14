@@ -19,11 +19,9 @@ import java.util.List;
 public class OrderController {
 
     private OrderService orderService;
-    private ProductService productService;
 
-    public OrderController(OrderService orderService, ProductService productService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
-        this.productService = productService;
     }
 
 
@@ -55,23 +53,6 @@ public class OrderController {
     }
 
 
-    @GetMapping("/products")
-    public ResponseEntity<List<ProductDto>> findAllProducts(@RequestParam(required = false) Product.Type sectionType) {
-        List<ProductDto> products = productService.getProducts(sectionType);
 
-        return ResponseEntity.ok(products);
-    }
-
-    @PreAuthorize("hasRole({'ADMIN','MANAGER'})")
-    @PostMapping("/products")
-    public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid ProductDto product) {
-        return new ResponseEntity<>(productService.addProduct(product), HttpStatus.CREATED);
-    }
-
-    @PreAuthorize("hasRole({'ADMIN','MANAGER'})")
-    @PutMapping("/products/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductDto product) {
-        return ResponseEntity.ok(productService.updateProduct(id,product));
-    }
 
 }

@@ -1,10 +1,10 @@
 package springboot.cinemaapi.cinemaapifororders.controller.movie.repertoire;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.SeanceDto;
 import springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.SeanceService;
 
 import java.util.List;
@@ -19,8 +19,27 @@ public class SeanceController {
         this.seanceService = seanceService;
     }
 
-    @GetMapping("/repertoire/{repertoireId}/seances")
-    public List<Seance> getSeancesForRepertoire(@PathVariable Long repertoireId) {
-        return seanceService.getSeancesForRepertoire(repertoireId)
+    @GetMapping("/repertoires/{repertoireId}/seances")
+    public List<SeanceDto> getSeancesForRepertoire(@PathVariable Long repertoireId) {
+        return seanceService.getSeancesForRepertoire(repertoireId);
+    }
+    @PostMapping("/repertoires/{repertoireId}/seances/{id}")
+    public ResponseEntity<SeanceDto> getSeanceById(@PathVariable Long repertoireId, @PathVariable Long id) {
+        return ResponseEntity.ok(seanceService.getSeanceById(id, repertoireId));
+    }
+    @PostMapping("/repertoires/{repertoireId}/seances")
+    public ResponseEntity<SeanceDto> createSeance(@PathVariable Long repertoireId, @Valid @RequestBody SeanceDto seanceDto) {
+        return new ResponseEntity<>(seanceService.createSeance(repertoireId,seanceDto), HttpStatus.CREATED);
+    }
+    @PutMapping("/repertoires/{repertoireId}/seances/{seanceId}")
+    public ResponseEntity<SeanceDto> updateSeance(@PathVariable Long repertoireId,  @PathVariable Long seanceId, @Valid @RequestBody SeanceDto seanceDto) {
+        return new ResponseEntity<>(seanceService.updateSeance(seanceId,repertoireId,seanceDto),HttpStatus.OK);
+    }
+    @DeleteMapping("/repertoires/{repertoireId}/seances/{seanceId}")
+    public ResponseEntity<String> deleteSeance(@PathVariable Long repertoireId, @PathVariable Long seanceId) {
+
+        seanceService.deleteSeance(seanceId,repertoireId);
+
+        return ResponseEntity.ok("Seance was successfully deleted");
     }
 }

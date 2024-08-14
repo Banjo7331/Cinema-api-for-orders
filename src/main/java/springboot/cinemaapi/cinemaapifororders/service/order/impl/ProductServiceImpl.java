@@ -25,6 +25,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDto findProductById(Long id) {
+        return modelMapper.map(productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product not found")), ProductDto.class);
+    }
+
+    @Override
     public List<ProductDto> getProducts(Product.Type type) {
         List<Product> products;
         if(type == null){
