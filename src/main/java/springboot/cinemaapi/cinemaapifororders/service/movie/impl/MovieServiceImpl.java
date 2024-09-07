@@ -27,6 +27,8 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieDto> getAllMovies() {
         List<Movie> movies = movieRepository.findAll();
 
+        System.out.println(movies);
+
         List<MovieDto> moviesDto = movies.stream().map(movie -> modelMapper.map(movie, MovieDto.class)).collect(Collectors.toList());
 
         return  moviesDto;

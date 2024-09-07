@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import springboot.cinemaapi.cinemaapifororders.entity.User;
 
 @Getter
 @Setter
@@ -29,6 +30,10 @@ public class Reservation {
             message = "Invalid phone number format")
     @Column(nullable = false)
     private String phoneNumber;
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = true)
+    private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seance_id",nullable = false)
