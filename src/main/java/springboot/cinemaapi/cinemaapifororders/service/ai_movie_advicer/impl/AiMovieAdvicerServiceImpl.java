@@ -2,135 +2,95 @@ package springboot.cinemaapi.cinemaapifororders.service.ai_movie_advicer.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import springboot.cinemaapi.cinemaapifororders.exception.TooManyAICallsException;
+import springboot.cinemaapi.cinemaapifororders.payload.ChatCompletionRequest;
+import springboot.cinemaapi.cinemaapifororders.payload.ChatCompletionResponse;
+import springboot.cinemaapi.cinemaapifororders.payload.CinemaAiAnswer;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.UserPreferencesDto;
 import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
 import springboot.cinemaapi.cinemaapifororders.service.ai_movie_advicer.AiMovieAdvicerService;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class AiMovieAdvicerServiceImpl implements AiMovieAdvicerService {
 
-    @Value("${openai.api.key}")
     private String apiKey;
 
     private MovieRepository movieRepository;
+    private RestTemplate restTemplate;
 
-    public AiMovieAdvicerServiceImpl(MovieRepository movieRepository) {
+    public AiMovieAdvicerServiceImpl(MovieRepository movieRepository,RestTemplate restTemplate) {
         this.movieRepository = movieRepository;
+        this.restTemplate = restTemplate;
     }
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private static final String AIML_API_URL = "https://api.aimlapi.com/v1/chat/completions";
 
     @Override
-    public List<Map<String, String>> getChatCompletion(String model, String systemContent, UserPreferencesDto userPreferences) {
-
-        System.out.println(movieRepository.findMoviesAlreadyRunning(LocalDate.now()));
-        List<Map<String, String>> moviesStarted = movieRepository.findMoviesAlreadyRunning(LocalDate.now())
-                .stream()
-                .map(movie -> {
-                    Map<String, String> movieData = new HashMap<>();
-                    movieData.put("title&category", movie.getName() +" "+ movie.getCategory());
-                    movieData.put("description", movie.getDescription());
-                    return movieData;
-                })
-                .collect(Collectors.toList());
-
-        System.out.println(moviesStarted);
+    public CinemaAiAnswer askAi(UserPreferencesDto userPreferences, String model){
 
         StringBuilder movieListBuilder = new StringBuilder();
-        movieListBuilder.append("Available movies:\n");
-        for (Map<String, String> movie : moviesStarted) {
-            movieListBuilder.append("Title: ").append(movie.get("title&category"))
-                    .append("\nDescription: ").append(movie.get("description"))
-                    .append("\n\n");
-        }
-        String beginningOfPrompt ="The client prefers: " + userPreferences.getPreferenceForMovieType();
 
-        if(!userPreferences.getMovieCategory().isEmpty()){
-            beginningOfPrompt = "The client prefers movie of category: "+userPreferences.getMovieCategory()+"with his preferences" + userPreferences.getPreferenceForMovieType();
-        }
-        String userMessage = beginningOfPrompt +
-                ". Please compare each movie description with this client preference. Recommend directly to customer ONLY movies where the accuracy is at least 75%. Provide the result in JSON format."+ "Return the data in the format {\\\"recommended_movies\\\": [{\\\"title\\\": \\\"Movie A\\\", \\\"reason\\\": \\\"Explanation\\\"}]}."+ " If no movie matches, return an empty array.\" If the movie does not meet the 75% threshold, do not mention it at all. Return only the movie titles and reasons for the recommendation.\n\n There are the following movies:\n" + movieListBuilder.toString();
+        movieRepository.findMoviesAlreadyRunning(LocalDate.now())
+                .forEach(movie -> {
+                    movieListBuilder.append("Title: ").append(movie.getName()).append(" ").append(movie.getCategory())
+                            .append("\nDescription: ").append(movie.getDescription())
+                            .append("\n\n");
+                });
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + apiKey);
-        headers.set("Content-Type", "application/json");
 
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", model);
-        requestBody.put("messages", new Object[]{
-                new HashMap<String, String>() {{
-                    put("role", "system");
-                    put("content", systemContent);
-                }},
-                new HashMap<String, Object>() {{
-                    put("role", "user");
-                    put("content", "Here is your task:\n\n" + userMessage);
-                }}
-        });
-        requestBody.put("temperature", 0.5);
-        requestBody.put("max_tokens", 256);
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+        String movieCategory = "Optional";
 
-        try {
-            ResponseEntity<Map> response = restTemplate.exchange(AIML_API_URL, HttpMethod.POST, entity, Map.class);
-            Map<String, Object> responseBody = response.getBody();
-            if (responseBody != null && responseBody.containsKey("choices")) {
-                Map<String, Object> firstChoice = (Map<String, Object>) ((List<Object>) responseBody.get("choices")).get(0);
-                Map<String, String> message = (Map<String, String>) firstChoice.get("message");
-
-                String aiResponse = message.get("content");
-                return processMovieRecommendationResponse(aiResponse);
-            } else {
-                throw new TooManyAICallsException("Failed to get response from AI/ML API");
-            }
-        }catch (HttpClientErrorException e) {
-            throw new TooManyAICallsException(e.getMessage());
+        if(userPreferences.getMovieCategory() != null && !userPreferences.getMovieCategory().isEmpty()){
+            movieCategory = userPreferences.getMovieCategory();
         }
 
+        StringBuilder messageToAi = new StringBuilder();
+
+        messageToAi.append("Your task is to recommend best matched movies to customer's requirements. Here it is the requirement: ").append(userPreferences).append(" with preferred category: ").append(movieCategory).append(".\n")
+                .append(". There is a list of movies from cinema database: ").append(movieListBuilder.toString()).append("\n\n")
+                .append("Provide the result in JSON format. Return the data in the format {\\\"recommended_movies\\\": [{\\\"title\\\": \\\"Movie A\\\", \\\"reason\\\": \\\"Explanation\\\"}]}.").append(" If no movie matches, return an empty array.\" If the movie does not meet the 75% threshold, do not mention it at all. Return only the movie titles and reasons for the recommendation.\n\n");
+
+        ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest(messageToAi.toString(),model);
+
+        ChatCompletionResponse chatCompletionResponse = restTemplate.postForObject("https://api.aimlapi.com/v1/chat/completions",chatCompletionRequest,ChatCompletionResponse.class);
+
+        assert chatCompletionResponse != null;
+        return structureAiAnswer(chatCompletionResponse,model);
     }
 
-    public List<Map<String, String>> processMovieRecommendationResponse(String aiResponse) {
-        // Clean the AI response (remove markdown formatting)
-        String cleanedResponse = aiResponse.replaceAll("```json", "").replaceAll("```", "").trim();
+    private CinemaAiAnswer structureAiAnswer(ChatCompletionResponse chatCompletionResponse,String model) {
 
+        String response = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
+
+        String cleanedResponse = response.replace("```json", "").replace("```", "").trim();
+
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> structuredResponse = objectMapper.readValue(cleanedResponse, new TypeReference<Map<String, Object>>() {});
 
-            // Extract the list of recommended movies
             List<Map<String, Object>> recommendedMovies = (List<Map<String, Object>>) structuredResponse.get("recommended_movies");
 
-            // Prepare the response list
-            List<Map<String, String>> recommendations = new ArrayList<>();
+            List<CinemaAiAnswer.Recommendation> recommendations = Optional.ofNullable(recommendedMovies)
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(movie -> new CinemaAiAnswer.Recommendation(
+                            (String) movie.get("title"),
+                            (String) movie.get("reason")
+                    ))
+                    .collect(Collectors.toList());
 
-            if (recommendedMovies != null && !recommendedMovies.isEmpty()) {
-                for (Map<String, Object> movie : recommendedMovies) {
-                    Map<String, String> movieDetails = new HashMap<>();
-                    movieDetails.put("title", (String) movie.get("title"));
-                    movieDetails.put("reason", (String) movie.get("reason"));
-                    recommendations.add(movieDetails);
-                }
-            }
+            return new CinemaAiAnswer(recommendations,model);
 
-            return recommendations; // Return the list of movies with title and reason
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error processing AI response as JSON", e);
         }
     }
+
 
 }

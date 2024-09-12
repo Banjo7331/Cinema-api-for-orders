@@ -27,23 +27,23 @@ public class ReservationController {
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Reservation>> getReservations(Authentication authentication) {
-
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<List<Reservation>> getReservationById(@PathVariable Long id) {
-
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Reservation> deleteAllReservation() {
-
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Reservation> deleteReservation(@PathVariable Long id) {
-
-    }
+//    @GetMapping
+//    public ResponseEntity<List<Reservation>> getReservations(Authentication authentication) {
+//
+//    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<List<Reservation>> getReservationById(@PathVariable Long id) {
+//
+//    }
+//
+//    @DeleteMapping
+//    public ResponseEntity<Reservation> deleteAllReservation() {
+//
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Reservation> deleteReservation(@PathVariable Long id) {
+//
+//    }
 
 }
