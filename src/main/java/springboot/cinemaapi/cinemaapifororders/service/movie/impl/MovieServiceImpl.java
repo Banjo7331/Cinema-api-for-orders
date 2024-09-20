@@ -2,6 +2,7 @@ package springboot.cinemaapi.cinemaapifororders.service.movie.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.MovieDto;
 import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
@@ -79,6 +80,8 @@ public class MovieServiceImpl implements MovieService {
         movieRepository.deleteAll();
     }
 
+
+    @Transactional
     @Override
     public void deleteExpiredMovies() {
         LocalDate today = LocalDate.now();

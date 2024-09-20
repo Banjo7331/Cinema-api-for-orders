@@ -27,9 +27,11 @@ public class Seance {
     private LocalTime hourOfStart;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)

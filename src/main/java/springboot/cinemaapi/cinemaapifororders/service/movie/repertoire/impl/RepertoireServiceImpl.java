@@ -2,6 +2,7 @@ package springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.RepertoireDto;
@@ -81,6 +82,8 @@ public class RepertoireServiceImpl implements RepertoireService {
         repertoireRepository.delete(repertoire);
     }
 
+
+    @Transactional
     @Override
     public void deleteRepertoiresOlderThanWeek() {
         LocalDate currentDate = LocalDate.now();

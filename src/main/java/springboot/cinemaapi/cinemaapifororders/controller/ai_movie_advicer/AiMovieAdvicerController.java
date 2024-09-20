@@ -1,6 +1,7 @@
 package springboot.cinemaapi.cinemaapifororders.controller.ai_movie_advicer;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springboot.cinemaapi.cinemaapifororders.payload.CinemaAiAnswer;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.UserPreferencesDto;
@@ -14,7 +15,7 @@ public class AiMovieAdvicerController {
     public AiMovieAdvicerController(AiMovieAdvicerService aiMovieAdvicerService) {
         this.aiMovieAdvicerService = aiMovieAdvicerService;
     }
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
     @PostMapping("/newTest")
     public ResponseEntity<CinemaAiAnswer> getOpenAiResponse(@RequestBody UserPreferencesDto userPreferences){
 

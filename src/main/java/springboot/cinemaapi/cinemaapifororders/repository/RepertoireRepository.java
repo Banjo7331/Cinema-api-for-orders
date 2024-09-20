@@ -18,8 +18,10 @@ public interface RepertoireRepository extends JpaRepository<Repertoire, Long> {
     List<Repertoire> findAllBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Modifying
-    @Transactional
     @Query("DELETE FROM Repertoire r WHERE r.date < :date")
     void deleteAllWithDateBefore(@Param("date") LocalDate date);
+
+
+
 
 }

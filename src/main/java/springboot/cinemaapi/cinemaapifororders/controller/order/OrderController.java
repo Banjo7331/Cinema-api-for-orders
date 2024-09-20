@@ -24,26 +24,27 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping
     public ResponseEntity<OrderDto> createOrder(@RequestBody @Valid OrderDto order) {
 
         return new ResponseEntity<>(orderService.createOrder(order), HttpStatus.CREATED);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PutMapping("/{id}")
     public ResponseEntity<OrderDto> updateOrder(@PathVariable Long id, @RequestBody @Valid OrderDto order) {
 
         return ResponseEntity.ok(orderService.updateOrder(id,order));
     }
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable Long id) {
 
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrderById(@PathVariable Long id) {
 

@@ -52,7 +52,7 @@ public class AiMovieAdvicerServiceImpl implements AiMovieAdvicerService {
 
         StringBuilder messageToAi = new StringBuilder();
 
-        messageToAi.append("Your task is to recommend best matched movies to customer's requirements. Here it is the requirement: ").append(userPreferences).append(" with preferred category: ").append(movieCategory).append(".\n")
+        messageToAi.append("Your task is to recommend best matched movies to customer's requirements. Here it is the requirement: ").append(userPreferences).append(" with preferred category: ").append(movieCategory).append(". If the category is optional, only consider client`s requirement").append(".\n")
                 .append(". There is a list of movies from cinema database: ").append(movieListBuilder.toString()).append("\n\n")
                 .append("Provide the result in JSON format. Return the data in the format {\\\"recommended_movies\\\": [{\\\"title\\\": \\\"Movie A\\\", \\\"reason\\\": \\\"Explanation\\\"}]}.").append(" If no movie matches, return an empty array.\" If the movie does not meet the 75% threshold, do not mention it at all. Return only the movie titles and reasons for the recommendation.\n\n");
 

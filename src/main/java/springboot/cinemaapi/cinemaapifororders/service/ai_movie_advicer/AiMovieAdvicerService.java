@@ -7,6 +7,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface AiMovieAdvicerService {
-    //List<Map<String, String>> getChatCompletion(String model, String systemContent, UserPreferencesDto userPreferences);
     CinemaAiAnswer askAi(UserPreferencesDto userPreferences,String model);
 }
