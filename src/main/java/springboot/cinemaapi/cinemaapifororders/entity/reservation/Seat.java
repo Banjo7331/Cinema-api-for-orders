@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.entity.order.Product;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,6 +37,7 @@ public class Seat {
     @Column(nullable = false)
     private boolean broken;
 
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Reservation> reservations;
 
 }

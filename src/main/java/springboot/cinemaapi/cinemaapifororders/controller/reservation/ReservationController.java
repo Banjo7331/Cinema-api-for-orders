@@ -1,19 +1,20 @@
 package springboot.cinemaapi.cinemaapifororders.controller.reservation;
 
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Reservation;
+import org.springframework.web.multipart.MultipartFile;
+import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
 import springboot.cinemaapi.cinemaapifororders.security.CustomUserDetails;
 import springboot.cinemaapi.cinemaapifororders.service.reservation.ReservationService;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/reservation")
@@ -21,9 +22,10 @@ public class ReservationController {
 
     private ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService/*, EmailService emailService*/) {
         this.reservationService = reservationService;
     }
+
 
     @PostMapping
     public ResponseEntity<ReservationDto> createReservation(@RequestBody ReservationDto reservationDto) {
@@ -32,18 +34,36 @@ public class ReservationController {
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ReservationDto> updateReservation(@RequestBody ReservationDto reservationDto, @PathVariable Long id) {
+        ReservationDto updatedReservation= reservationService.updateReservation(reservationDto,id);
+
+        return ResponseEntity.ok(updatedReservation);
+    }
+
+    @PutMapping("/{id}/attendance")
+    public ResponseEntity<ReservationDto> updateReservationAttendanceStatus(@PathVariable Long id) {
+        ReservationDto updatedReservation= reservationService.updateReservationAttendance(id);
+
+        return ResponseEntity.ok(updatedReservation);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationDto> getReservationById(@PathVariable Long id) {
+
+        return ResponseEntity.ok(reservationService.getReservationById(id));
+    }
+
     @GetMapping
-    public ResponseEntity<List<ReservationDto>> getAllReservations(@RequestParam(required = false) String userName,@RequestParam(required = false) String phoneNumber, @RequestParam(required = false) String email) {
+    public ResponseEntity<List<ReservationDto>> getAllReservations(@RequestParam(required = false) String phoneNumber, @RequestParam(required = false) String email) {
 
-        List<Reservation> reservations;
+        List<ReservationDto> reservations;
 
-        if (userName != null && !userName.isEmpty()){
-
-            reservations = reservationService.findReservationsByUserName(email);
-        } else if (phoneNumber != null && !phoneNumber.isEmpty()) {
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
             reservations = reservationService.findReservationsByPhoneNumber(phoneNumber);
         } else if(email != null && !email.isEmpty()){
-            reservations = reservationService.findReservationsByPhoneNumber(phoneNumber);
+            reservations = reservationService.findReservationsByEmail(email);
         }
 
         return ResponseEntity.ok(reservationService.getAllReservations());
@@ -66,14 +86,6 @@ public class ReservationController {
         }
 
         return ResponseEntity.ok(reservations);
-    }
-
-
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ReservationDto> getReservationById(@PathVariable Long id) {
-
-        return ResponseEntity.ok(reservationService.getReservationById(id));
     }
 
     @DeleteMapping("/{id}")

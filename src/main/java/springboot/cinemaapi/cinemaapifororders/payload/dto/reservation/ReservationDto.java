@@ -22,4 +22,6 @@ public class ReservationDto {
     private Long seanceId;
 
     private Long userId;
+
+    private Long orderId;
 }

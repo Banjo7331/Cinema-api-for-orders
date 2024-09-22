@@ -1,11 +1,11 @@
-package springboot.cinemaapi.cinemaapifororders.controller.ai_movie_advicer;
+package springboot.cinemaapi.cinemaapifororders.external.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springboot.cinemaapi.cinemaapifororders.payload.CinemaAiAnswer;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.UserPreferencesDto;
-import springboot.cinemaapi.cinemaapifororders.service.ai_movie_advicer.AiMovieAdvicerService;
+import springboot.cinemaapi.cinemaapifororders.external.service.AiMovieAdvicerService;
 
 @RestController
 @RequestMapping("/ai-advicer")

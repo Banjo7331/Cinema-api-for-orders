@@ -1,4 +1,4 @@
-package springboot.cinemaapi.cinemaapifororders.service.ai_movie_advicer.impl;
+package springboot.cinemaapi.cinemaapifororders.external.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,7 @@ import springboot.cinemaapi.cinemaapifororders.payload.ChatCompletionResponse;
 import springboot.cinemaapi.cinemaapifororders.payload.CinemaAiAnswer;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.UserPreferencesDto;
 import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
-import springboot.cinemaapi.cinemaapifororders.service.ai_movie_advicer.AiMovieAdvicerService;
+import springboot.cinemaapi.cinemaapifororders.external.service.AiMovieAdvicerService;
 
 import java.io.IOException;
 import java.time.LocalDate;

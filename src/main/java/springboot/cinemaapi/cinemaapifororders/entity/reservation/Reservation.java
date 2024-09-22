@@ -6,7 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import springboot.cinemaapi.cinemaapifororders.entity.User;
+import springboot.cinemaapi.cinemaapifororders.entity.order.Order;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -31,9 +35,20 @@ public class Reservation {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = true)
+    @Column(nullable = false)
+    private boolean attendance;
+
+    @Column
+    @CreationTimestamp
+    private Date dateCreated;
+
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seance_id",nullable = false)

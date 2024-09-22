@@ -7,11 +7,19 @@ import java.util.List;
 
 public interface ReservationService {
     ReservationDto createReservation(ReservationDto reservation);
+    List<ReservationDto> findReservationsByEmail(String email);
+
+    List<ReservationDto> findReservationsByPhoneNumber(String phoneNumber);
+
     List<ReservationDto> getAllReservationsForUser(Long id);
 
     List<ReservationDto> getAllReservations();
 
     ReservationDto getReservationById(Long id);
+
+    ReservationDto updateReservation(ReservationDto reservation, Long id);
+
+    ReservationDto updateReservationAttendance(Long id);
 
     void deleteReservationById(Long id);
 
@@ -21,9 +29,6 @@ public interface ReservationService {
 
     void deleteReservationsForMovie(String id);
 
-    List<ReservationDto> findReservationsByEmail(String email);
 
-    List<ReservationDto> findReservationsByPhoneNumber(String phoneNumber);
 
-    List<ReservationDto> findReservationsByUserName(String email);
 }

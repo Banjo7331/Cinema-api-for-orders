@@ -4,9 +4,9 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Reservation;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
+import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
 import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
 import springboot.cinemaapi.cinemaapifororders.repository.RepertoireRepository;
@@ -14,8 +14,9 @@ import springboot.cinemaapi.cinemaapifororders.repository.ReservationRepository;
 import springboot.cinemaapi.cinemaapifororders.repository.SeanceRepository;
 import springboot.cinemaapi.cinemaapifororders.service.reservation.ReservationService;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -25,7 +26,10 @@ public class ReservationServiceImpl implements ReservationService {
     private final SeanceRepository seanceRepository;
 
     private final ReservationRepository reservationRepository;
+
     private ModelMapper modelMapper;
+
+    private EmailService emailService;
 
     public ReservationServiceImpl(ModelMapper modelMapper, ReservationRepository reservationRepository, RepertoireRepository repertoireRepository, MovieRepository movieRepository, SeanceRepository seanceRepository) {
         this.modelMapper = modelMapper;
@@ -36,18 +40,14 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationDto> findReservationsByEmail(String email) {
-        return List.of();
+        return reservationRepository.findAllByEmail(email).stream().map(reservation -> modelMapper.map(reservation, ReservationDto.class)).collect(Collectors.toList());
     }
 
     @Override
     public List<ReservationDto> findReservationsByPhoneNumber(String phoneNumber) {
-        return List.of();
+        return reservationRepository.findAllByPhoneNumber(phoneNumber).stream().map(reservation -> modelMapper.map(reservation, ReservationDto.class)).collect(Collectors.toList());
     }
 
-    @Override
-    public List<ReservationDto> findReservationsByUserName(String email) {
-        return List.of();
-    }
 
     @Override
     public ReservationDto createReservation(ReservationDto reservationDto) {
@@ -80,23 +80,78 @@ public class ReservationServiceImpl implements ReservationService {
         return modelMapper.map(reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found")), ReservationDto.class);
     }
 
-    @Transactional
     @Override
-    public void deleteReservationById(Long id) {
-        reservationRepository.deleteById(id);
+    public ReservationDto updateReservation(ReservationDto reservationDto, Long id) {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found"));
+
+        reservation.setEmail(reservationDto.getEmail());
+        reservation.setSeance(seanceRepository.findById(reservationDto.getSeanceId()).orElseThrow(()-> new RuntimeException("Seance not found")));
+        reservation.setPhoneNumber(reservationDto.getPhoneNumber());
+        reservation.setNumberOfViewers(reservationDto.getNumberOfViewers());
+
+        return modelMapper.map(reservationRepository.save(reservation),ReservationDto.class);
+
+    }
+
+    @Override
+    public ReservationDto updateReservationAttendance(Long id) {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found"));
+
+        reservation.setAttendance(true);
+
+        return modelMapper.map(reservationRepository.save(reservation), ReservationDto.class);
     }
 
     @Transactional
     @Override
+    public void deleteReservationById(Long id) {
+
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found"));
+
+        Date reservationMadeDate = reservation.getDateCreated();
+
+        if(!reservation.isAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate)) {
+            emailService.notifyReservationDeletion(Collections.singletonList(reservation),"Deleted reservation with id:"+reservation.getId(),"Reservation was deleted with id:"+reservation.getId() +
+                    " Money from ticket and accessories ordered will be returned in 3 days");
+        }
+
+        reservationRepository.deleteById(id);
+    }
+
+
+    @Transactional
+    @Override
     public void deleteAllUserReservations(Long userId) {
+
+        List<Reservation> reservationList = reservationRepository.findAllByUserId(userId);
+
+        List<Reservation> reservationListOfLessThanWeekCreated = reservationList.stream().filter(reservation -> {
+
+            Date reservationMadeDate = reservation.getDateCreated();
+
+            return !reservation.isAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate);
+
+        }).collect(Collectors.toList());
+
         reservationRepository.deleteAllByUserId(userId);
+
+        emailService.notifyReservationDeletion(reservationListOfLessThanWeekCreated,"Deleted all reservations for User with Id:"+userId,"Reservations was deleted for User with id:"+userId +
+                " Money from ticket and accessories ordered will be returned in 3 days");
     }
 
     @Transactional
     @Override
     public void deleteReservationsForSeance(Long id) {
 
+        Seance seance = seanceRepository.findById(id).orElseThrow(()-> new RuntimeException("Seance not found"));
+
+        String movieName = seance.getMovie().getName();
+
         reservationRepository.deleteBySeanceId(id);
+
+        emailService.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for movie: " + movieName,"The seance was deleted from the repertoire." +
+                " Money from ticked and accessories ordered will be returned in 3 days");
+
     }
 
     @Transactional
@@ -107,7 +162,15 @@ public class ReservationServiceImpl implements ReservationService {
         Movie movie = movieRepository.findByName(movieName);
 
         if (movie != null) {
+
+            List<Seance> seances = movie.getSeances();
+
             List<Long> seanceIds = seanceRepository.findSeanceIdsByMovieId(movie.getId());
+
+            for (Seance seance : seances) {
+                emailService.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for movie: " + movieName,"The seance was deleted from the repertoire." +
+                        " Money from ticked and accessories ordered will be returned in 3 days");
+            }
 
             if (!seanceIds.isEmpty()) {
                 reservationRepository.deleteBySeanceIds(seanceIds);
@@ -116,6 +179,19 @@ public class ReservationServiceImpl implements ReservationService {
             throw new RuntimeException("Movie not found with name: " + movieName);
         }
 
+    }
+
+    private boolean checkDateIfRefundShouldBeDone(Date reservationMadeDate) {
+
+        Date today = new Date();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(reservationMadeDate);
+        calendar.add(Calendar.DAY_OF_YEAR, 7);
+
+        Date sevenDaysLater = calendar.getTime();
+
+        return today.after(sevenDaysLater);
     }
 
 }

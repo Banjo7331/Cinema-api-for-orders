@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,4 +39,6 @@ public class Seance {
     @JoinColumn(name = "repertoire_id",nullable = false)
     private Repertoire repertoire;
 
+    @OneToMany(mappedBy = "seance", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Reservation> reservations;
 }

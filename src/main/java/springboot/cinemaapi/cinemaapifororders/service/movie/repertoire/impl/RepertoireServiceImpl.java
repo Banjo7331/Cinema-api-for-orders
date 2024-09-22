@@ -3,8 +3,12 @@ package springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Repertoire;
+import springboot.cinemaapi.cinemaapifororders.entity.reservation.Reservation;
+import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
+import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.RepertoireDto;
 import springboot.cinemaapi.cinemaapifororders.repository.RepertoireRepository;
 import springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.RepertoireService;
@@ -20,9 +24,13 @@ public class RepertoireServiceImpl implements RepertoireService {
 
     private ModelMapper modelMapper;
 
-    public RepertoireServiceImpl(RepertoireRepository repertoireRepository, ModelMapper modelMapper) {
+    private EmailService emailService;
+
+
+    public RepertoireServiceImpl(RepertoireRepository repertoireRepository, ModelMapper modelMapper, EmailService emailService) {
         this.repertoireRepository = repertoireRepository;
         this.modelMapper = modelMapper;
+        this.emailService = emailService;
     }
 
     @Override
@@ -79,7 +87,15 @@ public class RepertoireServiceImpl implements RepertoireService {
     public void deleteRepertoireById(Long id) {
         Repertoire repertoire = repertoireRepository.findById(id).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
+        List<Seance> seances = repertoire.getSeancesList();
+
         repertoireRepository.delete(repertoire);
+
+        for (Seance seance : seances) {
+            emailService.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for repertoire of the day: " + repertoire.getDate(),"The seance were deleted from the repertoire." +
+                    " Money from tickets and accessories ordered will be returned in 3 days");
+        }
+
     }
 
 

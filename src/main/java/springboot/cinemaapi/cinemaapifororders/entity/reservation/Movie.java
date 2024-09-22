@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -43,5 +44,8 @@ public class Movie {
 
     @Column(nullable = false)
     private Integer minimumAgeToWatch;
+
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Seance> seances;
 
 }

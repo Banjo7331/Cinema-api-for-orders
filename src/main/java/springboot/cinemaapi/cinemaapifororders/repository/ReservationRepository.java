@@ -15,6 +15,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     void deleteAllByUserId(Long userId);
 
+    List<Reservation> findAllByEmail(String email);
+
+    List<Reservation> findAllByPhoneNumber(String phoneNumber);
+
     @Modifying
     @Query("DELETE FROM Reservation r WHERE r.seance.id IN :seanceIds")
     void deleteBySeanceIds(@Param("seanceIds") List<Long> seanceIds);

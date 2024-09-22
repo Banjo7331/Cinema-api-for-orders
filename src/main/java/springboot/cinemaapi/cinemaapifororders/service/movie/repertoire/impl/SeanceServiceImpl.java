@@ -2,10 +2,9 @@ package springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Repertoire;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Room;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
+import org.springframework.web.multipart.MultipartFile;
+import springboot.cinemaapi.cinemaapifororders.entity.reservation.*;
+import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.SeanceDto;
 import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
 import springboot.cinemaapi.cinemaapifororders.repository.RepertoireRepository;
@@ -13,6 +12,7 @@ import springboot.cinemaapi.cinemaapifororders.repository.RoomRepository;
 import springboot.cinemaapi.cinemaapifororders.repository.SeanceRepository;
 import springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.SeanceService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,12 +29,15 @@ public class SeanceServiceImpl implements SeanceService {
 
     private ModelMapper modelMapper;
 
-    public SeanceServiceImpl(SeanceRepository seanceRepository, ModelMapper modelMapper, RepertoireRepository repertoireRepository, MovieRepository movieRepository, RoomRepository roomRepository) {
+    private EmailService emailService;
+
+    public SeanceServiceImpl(SeanceRepository seanceRepository, ModelMapper modelMapper, RepertoireRepository repertoireRepository, MovieRepository movieRepository, RoomRepository roomRepository, EmailService emailService) {
         this.seanceRepository = seanceRepository;
         this.repertoireRepository = repertoireRepository;
         this.modelMapper = modelMapper;
         this.movieRepository = movieRepository;
         this.roomRepository = roomRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -109,6 +112,16 @@ public class SeanceServiceImpl implements SeanceService {
 
         Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
 
+        if (!seance.getRepertoire().getId().equals(repertoireId)) {
+            throw new RuntimeException("Seance does not belong to the provided Repertoire");
+        }
+
+        String movieName = seance.getMovie().getName();
+
         seanceRepository.delete(seance);
+
+        emailService.notifyReservationDeletion(seance.getReservations(),"Deleted reservation for Seance of Movie: "+movieName,"The reservations were deleted from database." +
+                " Money from ticked and accessories ordered will be returned in 3 days");
+
     }
 }
