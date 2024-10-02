@@ -63,13 +63,7 @@ public class MovieServiceImpl implements MovieService {
     public MovieDto updateMovie(Long movieId, MovieDto movieDto) {
         Movie movie = movieRepository.findById(movieId).orElseThrow(()-> new RuntimeException("Movie not found"));
 
-        movie.setName(movieDto.getName());
-        movie.setLengthInMinutes(movieDto.getLengthInMinutes());
-        movie.setCategory(movieDto.getCategory());
-        movie.setDescription(movieDto.getDescription());
-        movie.setPremiereDate(movieDto.getPremiereDate());
-        movie.setEndOfPlayingDate(movieDto.getEndOfPlayingDate());
-        movie.setMinimumAgeToWatch(movieDto.getMinimumAgeToWatch());
+        modelMapper.map(movieDto, movie);
 
         Movie updatedMovie = movieRepository.save(movie);
 

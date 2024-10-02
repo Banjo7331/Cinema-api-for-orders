@@ -1,5 +1,6 @@
 package springboot.cinemaapi.cinemaapifororders;
 
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -20,7 +21,11 @@ public class CinemaApiForOrdersApplication {
 
     @Bean
     public ModelMapper modelMapper(){
-        return new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
+
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+
+        return modelMapper;
     }
 
     @Bean

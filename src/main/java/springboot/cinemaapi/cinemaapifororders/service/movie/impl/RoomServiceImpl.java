@@ -40,10 +40,7 @@ public class RoomServiceImpl implements RoomService {
     public RoomDto updateRoom(Long roomId,RoomDto roomDto) {
         Room room = roomRepository.findById(roomId).orElseThrow(()->new RuntimeException("Room not found"));
 
-        room.setAvailable(roomDto.isAvailable());
-        room.setNumber(roomDto.getNumber());
-        room.setSpecial(roomDto.isSpecial());
-        room.setNumberOfRows(roomDto.getNumberOfRows());
+        modelMapper.map(roomDto,room);
 
         Room updatedRoom = roomRepository.save(room);
 

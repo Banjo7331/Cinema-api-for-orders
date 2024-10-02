@@ -84,22 +84,10 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationDto updateReservation(ReservationDto reservationDto, Long id) {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found"));
 
-        reservation.setEmail(reservationDto.getEmail());
-        reservation.setSeance(seanceRepository.findById(reservationDto.getSeanceId()).orElseThrow(()-> new RuntimeException("Seance not found")));
-        reservation.setPhoneNumber(reservationDto.getPhoneNumber());
-        reservation.setNumberOfViewers(reservationDto.getNumberOfViewers());
+        modelMapper.map(reservationDto,reservation);
 
         return modelMapper.map(reservationRepository.save(reservation),ReservationDto.class);
 
-    }
-
-    @Override
-    public ReservationDto updateReservationAttendance(Long id) {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found"));
-
-        reservation.setAttendance(true);
-
-        return modelMapper.map(reservationRepository.save(reservation), ReservationDto.class);
     }
 
     @Transactional

@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springboot.cinemaapi.cinemaapifororders.entity.order.Product;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.order.ProductDto;
+import springboot.cinemaapi.cinemaapifororders.payload.enums.ProductType;
 import springboot.cinemaapi.cinemaapifororders.service.order.ProductService;
 
 import java.util.List;
@@ -26,19 +27,19 @@ public class ProductController {
         return ResponseEntity.ok(productService.findProductById(id));
     }
     @GetMapping
-    public ResponseEntity<List<ProductDto>> findAllProducts(@RequestParam(required = false) Product.Type sectionType) {
+    public ResponseEntity<List<ProductDto>> findAllProducts(@RequestParam(required = false) ProductType sectionType) {
         List<ProductDto> products = productService.getProducts(sectionType);
 
         return ResponseEntity.ok(products);
     }
 
-    @PreAuthorize("hasRole({'ADMIN','MANAGER'})")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid ProductDto product) {
         return new ResponseEntity<>(productService.addProduct(product), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole({'ADMIN','MANAGER'})")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductDto product) {
         return ResponseEntity.ok(productService.updateProduct(id,product));

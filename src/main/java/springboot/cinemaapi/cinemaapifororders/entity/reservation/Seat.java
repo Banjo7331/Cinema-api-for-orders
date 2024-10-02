@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.entity.order.Product;
+import springboot.cinemaapi.cinemaapifororders.payload.enums.SeatType;
 
 import java.util.List;
 
@@ -18,12 +19,6 @@ import java.util.List;
 @Table(name = "seat")
 public class Seat {
 
-    public enum Type {
-        Classic,
-        Automatic,
-        Double
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,12 +27,13 @@ public class Seat {
     boolean available;
 
     @Column(nullable = false)
-    private Type type;
+    private SeatType seatType;
 
     @Column(nullable = false)
     private boolean broken;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Reservation> reservations;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "room_id")
+    private Room room;
 
 }

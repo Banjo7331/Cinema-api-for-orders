@@ -34,20 +34,13 @@ public class ReservationController {
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
     @PutMapping("/{id}")
     public ResponseEntity<ReservationDto> updateReservation(@RequestBody ReservationDto reservationDto, @PathVariable Long id) {
         ReservationDto updatedReservation= reservationService.updateReservation(reservationDto,id);
 
         return ResponseEntity.ok(updatedReservation);
     }
-
-    @PutMapping("/{id}/attendance")
-    public ResponseEntity<ReservationDto> updateReservationAttendanceStatus(@PathVariable Long id) {
-        ReservationDto updatedReservation= reservationService.updateReservationAttendance(id);
-
-        return ResponseEntity.ok(updatedReservation);
-    }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<ReservationDto> getReservationById(@PathVariable Long id) {

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seat;
+import springboot.cinemaapi.cinemaapifororders.payload.enums.SeatType;
 
 
 @Getter
@@ -14,9 +15,13 @@ import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seat;
 @AllArgsConstructor
 public class SeatDto {
 
+    private Long id;
+
     boolean available;
 
-    private Seat.Type type;
+    private SeatType seatType;
+
+    private Long roomId;
 
     private boolean broken;
 }

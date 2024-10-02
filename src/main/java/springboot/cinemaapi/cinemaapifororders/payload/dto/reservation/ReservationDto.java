@@ -1,5 +1,6 @@
 package springboot.cinemaapi.cinemaapifororders.payload.dto.reservation;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,8 @@ public class ReservationDto {
     private String email;
 
     private String phoneNumber;
+
+    private boolean attendance;
 
     private Long seanceId;
 

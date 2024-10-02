@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import springboot.cinemaapi.cinemaapifororders.payload.enums.ProductType;
 
 import java.math.BigDecimal;
 
@@ -17,11 +18,6 @@ import java.math.BigDecimal;
 @Table(name = "products",uniqueConstraints = {@UniqueConstraint(columnNames = {"code"})})
 public class Product {
 
-    public enum Type {
-        Coffee,
-        Bar,
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,11 +28,21 @@ public class Product {
     @Column(nullable = false)
     private String code;
 
-
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
-    private Type type;
+    @Column(name = "product_type",nullable = false)
+    private ProductType productType;
 
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", code='" + code + '\'' +
+                ", price=" + price +
+                ", productType=" + productType +
+                '}';
+    }
 }

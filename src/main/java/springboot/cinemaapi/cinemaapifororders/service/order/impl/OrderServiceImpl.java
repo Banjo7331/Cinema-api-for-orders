@@ -40,13 +40,11 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto updateOrder(Long id, OrderDto orderDto) {
         Order order = orderRepository.findById(id).orElseThrow(()-> new RuntimeException("Order not found"));
 
-        order.setTotalPrice(calculatePrice(orderDto));
-        order.setCouponCode(orderDto.getCouponCode());
-        order.setIsReservationForMovie(orderDto.getIsReservationForMovie());
+        modelMapper.map(orderDto, order);
 
-        orderRepository.save(order);
+        Order updatedOrder = orderRepository.save(order);
 
-        return modelMapper.map(order, OrderDto.class);
+        return modelMapper.map(updatedOrder, OrderDto.class);
     }
 
 

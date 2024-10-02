@@ -7,10 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import springboot.cinemaapi.cinemaapifororders.entity.User;
 import springboot.cinemaapi.cinemaapifororders.entity.order.Order;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -42,9 +44,18 @@ public class Reservation {
     @CreationTimestamp
     private Date dateCreated;
 
+    @Column
+    @UpdateTimestamp
+    private Date lastUpdated;
+
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "reservation_id") // Foreign key in Seat table
+    private List<Seat> seats;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")

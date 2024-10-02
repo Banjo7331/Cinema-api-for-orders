@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.entity.order.Product;
+import springboot.cinemaapi.cinemaapifororders.payload.enums.ProductType;
 
 import java.math.BigDecimal;
 
@@ -22,5 +23,5 @@ public class ProductDto {
 
     private BigDecimal price;
 
-    private Product.Type type;
+    private ProductType productType;
 }
