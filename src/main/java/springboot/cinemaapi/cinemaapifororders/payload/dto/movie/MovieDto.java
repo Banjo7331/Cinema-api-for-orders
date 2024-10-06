@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import springboot.cinemaapi.cinemaapifororders.payload.enums.MovieCategory;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -20,7 +21,7 @@ public class MovieDto {
 
     private String name;
 
-    private String category;
+    private MovieCategory movieCategory;
 
     private String description;
 

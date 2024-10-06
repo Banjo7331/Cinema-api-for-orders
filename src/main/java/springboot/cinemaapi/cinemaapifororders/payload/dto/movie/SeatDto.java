@@ -17,7 +17,7 @@ public class SeatDto {
 
     private Long id;
 
-    boolean available;
+    private Long number;
 
     private SeatType seatType;
 

@@ -1,6 +1,8 @@
 package springboot.cinemaapi.cinemaapifororders.entity.reservation;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,10 +28,14 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
+    @Min(1)
+    @Column
     private Integer numberOfViewers;
 
-    @Column(nullable = false)
+    @NotNull
+    @Pattern(regexp = "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email address")
+    @Column
     private String email;
 
     @Pattern(regexp = "^\\+?[0-9]{1,3}?[-.\\s]?\\(?[0-9]{1,4}?\\)?[-.\\s]?[0-9]{1,4}[-.\\s]?[0-9]{1,9}$",
@@ -37,8 +43,9 @@ public class Reservation {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(nullable = false)
-    private boolean attendance;
+    @NotNull
+    @Column
+    private Boolean attendance;
 
     @Column
     @CreationTimestamp
@@ -57,6 +64,7 @@ public class Reservation {
     @JoinColumn(name = "reservation_id") // Foreign key in Seat table
     private List<Seat> seats;
 
+    @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
     private Order order;

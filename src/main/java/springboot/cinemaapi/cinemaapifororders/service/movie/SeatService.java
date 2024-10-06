@@ -8,4 +8,5 @@ import java.util.List;
 public interface SeatService {
     List<SeatDto> getSeatsByRoomId(Long id);
     SeatDto updateSeat(Long seatId,SeatDto seatDto);
+
 }

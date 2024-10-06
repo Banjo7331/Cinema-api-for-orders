@@ -1,7 +1,9 @@
 package springboot.cinemaapi.cinemaapifororders.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.Set;
@@ -18,18 +20,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
+    @Size(min = 3, max = 10)
+    @Column
     private String username;
 
-    @Column(nullable = false)
+    @NotNull
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "Password must be at least 8 characters long, contain at least one uppercase letter and one digit")
+    @Column
     private String password;
 
+    @NotNull
     @Pattern(regexp = "^\\+?[0-9]{1,3}?[-.\\s]?\\(?[0-9]{1,4}?\\)?[-.\\s]?[0-9]{1,4}[-.\\s]?[0-9]{1,9}$",
             message = "Invalid phone number format")
     @Column
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @NotNull
+    @Pattern(regexp = "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email address")
+    @Column
     private String email;
 
     @JoinTable(name = "users_roles",

@@ -1,19 +1,16 @@
 package springboot.cinemaapi.cinemaapifororders.controller.reservation;
 
-import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
 import springboot.cinemaapi.cinemaapifororders.security.CustomUserDetails;
 import springboot.cinemaapi.cinemaapifororders.service.reservation.ReservationService;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -22,13 +19,13 @@ public class ReservationController {
 
     private ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService/*, EmailService emailService*/) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
 
     @PostMapping
-    public ResponseEntity<ReservationDto> createReservation(@RequestBody ReservationDto reservationDto) {
+    public ResponseEntity<ReservationDto> createReservation(@Valid  @RequestBody ReservationDto reservationDto) {
         ReservationDto reservation= reservationService.createReservation(reservationDto);
 
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
@@ -36,7 +33,7 @@ public class ReservationController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationDto> updateReservation(@RequestBody ReservationDto reservationDto, @PathVariable Long id) {
+    public ResponseEntity<ReservationDto> updateReservation(@Valid @RequestBody ReservationDto reservationDto, @PathVariable Long id) {
         ReservationDto updatedReservation= reservationService.updateReservation(reservationDto,id);
 
         return ResponseEntity.ok(updatedReservation);
@@ -48,6 +45,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservationById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")
     @GetMapping
     public ResponseEntity<List<ReservationDto>> getAllReservations(@RequestParam(required = false) String phoneNumber, @RequestParam(required = false) String email) {
 
@@ -57,9 +55,11 @@ public class ReservationController {
             reservations = reservationService.findReservationsByPhoneNumber(phoneNumber);
         } else if(email != null && !email.isEmpty()){
             reservations = reservationService.findReservationsByEmail(email);
+        } else{
+            reservations = reservationService.getAllReservations();
         }
 
-        return ResponseEntity.ok(reservationService.getAllReservations());
+        return ResponseEntity.ok(reservations);
 
     }
     @PreAuthorize("hasRole('USER') or hasRole('EMPLOYER') or hasRole('MANAGER') or hasRole('ADMIN')")

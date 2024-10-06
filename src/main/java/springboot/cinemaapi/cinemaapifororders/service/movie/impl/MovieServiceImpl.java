@@ -8,6 +8,7 @@ import springboot.cinemaapi.cinemaapifororders.entity.reservation.Reservation;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
 import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.MovieDto;
+import springboot.cinemaapi.cinemaapifororders.payload.enums.MovieCategory;
 import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
 import springboot.cinemaapi.cinemaapifororders.service.movie.MovieService;
 
@@ -34,13 +35,10 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public List<MovieDto> getAllMovies() {
-        List<Movie> movies = movieRepository.findAll();
+        List<MovieDto> movies = movieRepository.findAll().stream().map(movie -> modelMapper.map(movie, MovieDto.class))
+                .collect(Collectors.toList());
 
-        System.out.println(movies);
-
-        List<MovieDto> moviesDto = movies.stream().map(movie -> modelMapper.map(movie, MovieDto.class)).collect(Collectors.toList());
-
-        return  moviesDto;
+        return  movies;
     }
 
     @Override
@@ -48,6 +46,15 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new RuntimeException("Movie not found"));
 
         return modelMapper.map(movie, MovieDto.class);
+    }
+
+    @Override
+    public List<MovieDto> getMoviesByMovieCategory(MovieCategory movieCategory) {
+        List<MovieDto> movies = movieRepository.findMoviesByMovieCategory(movieCategory).stream().map(movie -> modelMapper.map(movie, MovieDto.class))
+                .collect(Collectors.toList());
+
+        return  movies;
+
     }
 
     @Override
@@ -81,7 +88,7 @@ public class MovieServiceImpl implements MovieService {
 
                 Date reservationMadeDate = reservation.getDateCreated();
 
-                return !reservation.isAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate);
+                return !reservation.getAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate);
 
             }).collect(Collectors.toList());
 

@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Reservation;
+import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
 
 import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    List<Reservation> findReservationsBySeance(Seance seance);
 
     List<Reservation> findAllByUserId(Long userId);
 

@@ -1,6 +1,7 @@
 package springboot.cinemaapi.cinemaapifororders.controller.movie;
 
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,12 +35,12 @@ public class MovieController {
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PostMapping
-    public ResponseEntity<MovieDto> addMovie(@RequestBody MovieDto movie) {
+    public ResponseEntity<MovieDto> addMovie(@Valid @RequestBody MovieDto movie) {
         return new ResponseEntity<>(movieService.addMovie(movie),HttpStatus.CREATED);
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PutMapping("/{id}")
-    public ResponseEntity<MovieDto> updateMovie(@RequestBody MovieDto movie, @PathVariable Long id) {
+    public ResponseEntity<MovieDto> updateMovie(@Valid @RequestBody MovieDto movie, @PathVariable Long id) {
         return ResponseEntity.ok(movieService.updateMovie(id,movie));
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")

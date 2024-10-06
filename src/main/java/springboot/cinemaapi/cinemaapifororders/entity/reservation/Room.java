@@ -1,6 +1,9 @@
 package springboot.cinemaapi.cinemaapifororders.entity.reservation;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,17 +24,28 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private int number;
+    @NotNull
+    @Min(1)
+    @Max(10)
+    @Column
+    private Integer number;
 
-    @Column(nullable = false)
-    private int numberOfRows;
+    @NotNull
+    @Min(1)
+    @Column
+    private Integer numberOfRows;
 
-    @Column(nullable = false)
-    private boolean special;
+    @NotNull
+    @Column
+    private Integer numberOfSeats;
 
-    @Column(nullable = false)
-    private boolean available;
+    @NotNull
+    @Column
+    private Boolean special;
+
+    @NotNull
+    @Column
+    private Boolean available;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seat> seats;

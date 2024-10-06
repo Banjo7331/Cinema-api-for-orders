@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatDto;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.SeanceDto;
 import springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.SeanceService;
 
@@ -25,10 +26,20 @@ public class SeanceController {
         return seanceService.getSeancesForRepertoire(repertoireId);
     }
 
-
     @PostMapping("/repertoires/{repertoireId}/seances/{id}")
     public ResponseEntity<SeanceDto> getSeanceById(@PathVariable Long repertoireId, @PathVariable Long id) {
         return ResponseEntity.ok(seanceService.getSeanceById(id, repertoireId));
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")
+    @GetMapping("/repertoires/{repertoireId}/seances/{seanceId}/reservations")
+    public ResponseEntity<List<SeatDto>> getReservationsForSeance(@PathVariable Long seanceId, @PathVariable Long repertoireId) {
+        return ResponseEntity.ok(seanceService.getReservedSeatsForSeance(repertoireId,seanceId));
+    }
+
+    @GetMapping("/repertoires/{repertoireId}/seances/{seanceId}/available-seats")
+    public ResponseEntity<List<SeatDto>> getAvailableSeats(@PathVariable Long seanceId, @PathVariable Long repertoireId) {
+        return ResponseEntity.ok(seanceService.getReservedSeatsForSeance(repertoireId,seanceId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")

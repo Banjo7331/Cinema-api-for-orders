@@ -9,7 +9,6 @@ import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
 import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
 import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
-import springboot.cinemaapi.cinemaapifororders.repository.RepertoireRepository;
 import springboot.cinemaapi.cinemaapifororders.repository.ReservationRepository;
 import springboot.cinemaapi.cinemaapifororders.repository.SeanceRepository;
 import springboot.cinemaapi.cinemaapifororders.service.reservation.ReservationService;
@@ -31,11 +30,12 @@ public class ReservationServiceImpl implements ReservationService {
 
     private EmailService emailService;
 
-    public ReservationServiceImpl(ModelMapper modelMapper, ReservationRepository reservationRepository, RepertoireRepository repertoireRepository, MovieRepository movieRepository, SeanceRepository seanceRepository) {
+    public ReservationServiceImpl(ModelMapper modelMapper, ReservationRepository reservationRepository, MovieRepository movieRepository, SeanceRepository seanceRepository, EmailService emailService) {
         this.modelMapper = modelMapper;
         this.reservationRepository = reservationRepository;
         this.movieRepository = movieRepository;
         this.seanceRepository = seanceRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         Date reservationMadeDate = reservation.getDateCreated();
 
-        if(!reservation.isAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate)) {
+        if(!reservation.getAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate)) {
             emailService.notifyReservationDeletion(Collections.singletonList(reservation),"Deleted reservation with id:"+reservation.getId(),"Reservation was deleted with id:"+reservation.getId() +
                     " Money from ticket and accessories ordered will be returned in 3 days");
         }
@@ -117,7 +117,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             Date reservationMadeDate = reservation.getDateCreated();
 
-            return !reservation.isAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate);
+            return !reservation.getAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate);
 
         }).collect(Collectors.toList());
 

@@ -1,13 +1,14 @@
 package springboot.cinemaapi.cinemaapifororders.entity.reservation;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -22,7 +23,8 @@ public class Repertoire {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     @Temporal(TemporalType.DATE)
     private LocalDate date;
 

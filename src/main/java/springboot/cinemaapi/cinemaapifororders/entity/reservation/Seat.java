@@ -2,14 +2,13 @@ package springboot.cinemaapi.cinemaapifororders.entity.reservation;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import springboot.cinemaapi.cinemaapifororders.entity.order.Product;
 import springboot.cinemaapi.cinemaapifororders.payload.enums.SeatType;
 
-import java.util.List;
 
 @Getter
 @Setter
@@ -23,14 +22,17 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    boolean available;
+    @NotNull
+    @Column
+    private Long number;
 
+    @NotNull
     @Column(nullable = false)
     private SeatType seatType;
 
-    @Column(nullable = false)
-    private boolean broken;
+    @NotNull
+    @Column
+    private Boolean broken;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "room_id")

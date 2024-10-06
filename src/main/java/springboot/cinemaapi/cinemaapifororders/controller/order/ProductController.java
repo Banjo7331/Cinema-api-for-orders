@@ -35,13 +35,13 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid ProductDto product) {
+    public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody ProductDto product) {
         return new ResponseEntity<>(productService.addProduct(product), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductDto product) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,@Valid @RequestBody ProductDto product) {
         return ResponseEntity.ok(productService.updateProduct(id,product));
     }
 }

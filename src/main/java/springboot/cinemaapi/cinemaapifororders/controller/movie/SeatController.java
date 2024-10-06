@@ -1,8 +1,9 @@
 package springboot.cinemaapi.cinemaapifororders.controller.movie;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seat;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatDto;
 import springboot.cinemaapi.cinemaapifororders.service.movie.SeatService;
 
@@ -18,15 +19,16 @@ public class SeatController {
         this.seatService = seatService;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")
     @GetMapping("/seats")
     public ResponseEntity<List<SeatDto>> getSeats(@PathVariable Long roomId) {
 
         return ResponseEntity.ok(seatService.getSeatsByRoomId(roomId));
     }
 
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PutMapping("/seats/{seatId}")
-    public ResponseEntity<SeatDto> updateSeat(@PathVariable Long seatId, @RequestBody SeatDto seatDto) {
+    public ResponseEntity<SeatDto> updateSeat(@PathVariable Long seatId, @Valid @RequestBody SeatDto seatDto) {
         return ResponseEntity.ok(seatService.updateSeat(seatId, seatDto));
     }
 

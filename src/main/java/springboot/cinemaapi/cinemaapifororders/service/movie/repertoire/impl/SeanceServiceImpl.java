@@ -2,17 +2,14 @@ package springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.*;
 import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatDto;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.SeanceDto;
-import springboot.cinemaapi.cinemaapifororders.repository.MovieRepository;
-import springboot.cinemaapi.cinemaapifororders.repository.RepertoireRepository;
-import springboot.cinemaapi.cinemaapifororders.repository.RoomRepository;
-import springboot.cinemaapi.cinemaapifororders.repository.SeanceRepository;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
+import springboot.cinemaapi.cinemaapifororders.repository.*;
 import springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.SeanceService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,15 +22,18 @@ public class SeanceServiceImpl implements SeanceService {
 
     private MovieRepository movieRepository;
 
+    private ReservationRepository reservationRepository;
+
     private RoomRepository roomRepository;
 
     private ModelMapper modelMapper;
 
     private EmailService emailService;
 
-    public SeanceServiceImpl(SeanceRepository seanceRepository, ModelMapper modelMapper, RepertoireRepository repertoireRepository, MovieRepository movieRepository, RoomRepository roomRepository, EmailService emailService) {
+    public SeanceServiceImpl(SeanceRepository seanceRepository, ModelMapper modelMapper, RepertoireRepository repertoireRepository,ReservationRepository reservationRepository, MovieRepository movieRepository, RoomRepository roomRepository, EmailService emailService) {
         this.seanceRepository = seanceRepository;
         this.repertoireRepository = repertoireRepository;
+        this.reservationRepository = reservationRepository;
         this.modelMapper = modelMapper;
         this.movieRepository = movieRepository;
         this.roomRepository = roomRepository;
@@ -60,6 +60,40 @@ public class SeanceServiceImpl implements SeanceService {
         }
 
         return modelMapper.map(seance,SeanceDto.class);
+    }
+
+    @Override
+    public List<ReservationDto> findReservationsBySeanceId(Long repertoireId,Long seanceId) {
+        Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
+
+        Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
+
+        if(!seance.getRepertoire().getId().equals(repertoire.getId())){
+            throw new RuntimeException("Seance does not belong to repertoire");
+        }
+
+        List<ReservationDto> reservationList = reservationRepository.findReservationsBySeance(seance).stream().map(reservation -> modelMapper.map(reservation, ReservationDto.class))
+                .collect(Collectors.toList());
+
+        return reservationList;
+    }
+
+    @Override
+    public List<SeatDto> getReservedSeatsForSeance(Long repertoireId,Long seanceId) {
+        Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
+
+        Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
+
+        if(!seance.getRepertoire().getId().equals(repertoire.getId())){
+            throw new RuntimeException("Seance does not belong to repertoire");
+        }
+
+        List<Reservation> reservationList = reservationRepository.findReservationsBySeance(seance);
+
+        return reservationList.stream()
+                .flatMap(reservation -> reservation.getSeats().stream())
+                .map(seat -> modelMapper.map(seat, SeatDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override

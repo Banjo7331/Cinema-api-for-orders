@@ -1,6 +1,7 @@
 package springboot.cinemaapi.cinemaapifororders.entity.order;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,27 +23,24 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
+    @Size(min = 3, max = 15)
+    @Column
     private String name;
 
-    @Column(nullable = false)
+    @NotNull
+    @Pattern(regexp = "^[A-Z]{6}$", message = "Code must contain exactly 6 uppercase letters")
+    @Column
     private String code;
 
-    @Column(nullable = false)
+    @NotNull
+    @DecimalMin(value = "0.99")
+    @Column
     private BigDecimal price;
 
-    @Column(name = "product_type",nullable = false)
+    @NotNull
+    @Column(name = "product_type")
     private ProductType productType;
 
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", price=" + price +
-                ", productType=" + productType +
-                '}';
-    }
 }

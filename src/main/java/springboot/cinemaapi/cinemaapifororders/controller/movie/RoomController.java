@@ -1,5 +1,6 @@
 package springboot.cinemaapi.cinemaapifororders.controller.movie;
 
+import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +31,13 @@ public class RoomController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<RoomDto> createRoom(@RequestBody RoomDto roomDto) {
+    public ResponseEntity<RoomDto> createRoom(@Valid @RequestBody RoomDto roomDto) {
         return new ResponseEntity<>(roomService.createRoom(roomDto), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")
     @PutMapping("/{id}")
-    public ResponseEntity<RoomDto> updateRoom(@PathVariable Long id,@RequestBody RoomDto roomDto) {
+    public ResponseEntity<RoomDto> updateRoom(@PathVariable Long id,@Valid  @RequestBody RoomDto roomDto) {
         return ResponseEntity.ok(roomService.updateRoom(id, roomDto));
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")

@@ -1,6 +1,9 @@
 package springboot.cinemaapi.cinemaapifororders.entity.order;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,15 +25,19 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = true)
+    @Pattern(regexp = "^[A-Z]{6}$", message = "The code must consist of exactly 6 uppercase letters")
+    @Column
     private String couponCode;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private Boolean isReservationForMovie;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private BigDecimal totalPrice;
 
+    @Size(min = 1, max = 50)
     @OneToMany(fetch = FetchType.EAGER)
     private List<Product> orderItems = new ArrayList<>();
 }

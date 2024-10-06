@@ -37,7 +37,7 @@ public class AiMovieAdvicerServiceImpl implements AiMovieAdvicerService {
 
         movieRepository.findMoviesAlreadyRunning(LocalDate.now())
                 .forEach(movie -> {
-                    movieListBuilder.append("Title: ").append(movie.getName()).append(" ").append(movie.getCategory())
+                    movieListBuilder.append("Title: ").append(movie.getName()).append(" ").append(movie.getMovieCategory())
                             .append("\nDescription: ").append(movie.getDescription())
                             .append("\n\n");
                 });

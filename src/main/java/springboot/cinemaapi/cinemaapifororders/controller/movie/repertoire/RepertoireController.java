@@ -1,5 +1,6 @@
 package springboot.cinemaapi.cinemaapifororders.controller.movie.repertoire;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,21 +40,21 @@ public class RepertoireController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PostMapping()
-    public ResponseEntity<RepertoireDto> addRepertoire(@RequestBody RepertoireDto repertoireDto) {
+    public ResponseEntity<RepertoireDto> addRepertoire(@Valid  @RequestBody RepertoireDto repertoireDto) {
 
         return new ResponseEntity<>(repertoireService.createRepertoire(repertoireDto), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PutMapping("/{id}")
-    public ResponseEntity<RepertoireDto> updateRepertoire(@RequestBody RepertoireDto repertoireDto, @PathVariable Long id) {
+    public ResponseEntity<RepertoireDto> updateRepertoire(@Valid @RequestBody RepertoireDto repertoireDto, @PathVariable Long id) {
 
         return ResponseEntity.ok(repertoireService.updateRepertoire(id,repertoireDto));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")
     @DeleteMapping()
-    public ResponseEntity<String> deleteRepertoriesOlderThanAWeek(@RequestBody RepertoireDto repertoireDto) {
+    public ResponseEntity<String> deleteRepertoriesOlderThanAWeek(@Valid @RequestBody RepertoireDto repertoireDto) {
 
         repertoireService.deleteRepertoiresOlderThanWeek();
         return ResponseEntity.ok("Week of previous repertoires was deleted");

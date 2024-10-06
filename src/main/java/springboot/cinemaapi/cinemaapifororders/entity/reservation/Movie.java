@@ -1,14 +1,14 @@
 package springboot.cinemaapi.cinemaapifororders.entity.reservation;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.br.CPF;
+import springboot.cinemaapi.cinemaapifororders.payload.enums.MovieCategory;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -23,26 +23,39 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
+    @Min(1)
+    @Max(240)
+    @Column
     private Long lengthInMinutes;
 
-    @Column(nullable = false)
+    @NotNull
+    @Size(min = 1, max = 30)
+    @Column
     private String name;
 
-    @Column(nullable = false)
-    private String category;
+    @NotNull
+    @Column
+    private MovieCategory movieCategory;
 
-    @Column(nullable = false)
+    @NotNull
+    @Size(min = 20, max = 100)
+    @Column
     private String description;
 
-    @Column(nullable = false)
+    @NotNull
+    @PastOrPresent
+    @Column
     private LocalDate premiereDate;
 
-
-    @Column(nullable = false)
+    @NotNull
+    @FutureOrPresent
+    @Column
     private LocalDate endOfPlayingDate;
 
-    @Column(nullable = false)
+    @NotNull
+    @Min(3)
+    @Column
     private Integer minimumAgeToWatch;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

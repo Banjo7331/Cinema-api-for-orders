@@ -2,10 +2,15 @@ package springboot.cinemaapi.cinemaapifororders.service.movie.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import springboot.cinemaapi.cinemaapifororders.entity.reservation.Reservation;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Room;
+import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seance;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Seat;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatDto;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
+import springboot.cinemaapi.cinemaapifororders.repository.ReservationRepository;
 import springboot.cinemaapi.cinemaapifororders.repository.RoomRepository;
+import springboot.cinemaapi.cinemaapifororders.repository.SeanceRepository;
 import springboot.cinemaapi.cinemaapifororders.repository.SeatRepository;
 import springboot.cinemaapi.cinemaapifororders.service.movie.SeatService;
 
@@ -53,4 +58,5 @@ public class SeatServiceImpl implements SeatService {
 
         return modelMapper.map(updateSeat,SeatDto.class);
     }
+
 }

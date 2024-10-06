@@ -1,5 +1,6 @@
 package springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire;
 
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class SeanceDto {
     private LocalTime hourOfStart;
 
     private Long movieId;
+
 
     private Long roomId;
 

@@ -1,5 +1,6 @@
 package springboot.cinemaapi.cinemaapifororders.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public class AuthController {
         this.authService = authService;
     }
     @PostMapping(value = {"/login","/signin"})
-    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<JwtAuthResponse> login(@Valid @RequestBody LoginDto loginDto) {
         String token = authService.login(loginDto);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
@@ -29,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping(value = {"/logout","/signout"})
-    public ResponseEntity<JwtAuthResponse> logout(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<JwtAuthResponse> logout(@Valid @RequestBody LoginDto loginDto) {
         String token = authService.login(loginDto);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
@@ -38,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping(value = {"/register","/singup"})
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterDto registerDto) {
         System.out.println("test");
         String response = authService.register(registerDto);
         return ResponseEntity.ok(response);
