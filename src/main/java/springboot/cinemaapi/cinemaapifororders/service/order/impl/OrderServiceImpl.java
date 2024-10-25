@@ -26,7 +26,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderDto createOrder(OrderDto orderDto) {
+    public OrderDto addOrder(OrderDto orderDto) {
 
 
         Order order = modelMapper.map(orderDto,Order.class);
@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderDto getOrderById(Long orderId) {
+    public OrderDto findOrderById(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(()-> new RuntimeException("Order not found"));
 
         return modelMapper.map(order,OrderDto.class);

@@ -1,5 +1,7 @@
 package springboot.cinemaapi.cinemaapifororders.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +17,7 @@ public interface RepertoireRepository extends JpaRepository<Repertoire, Long> {
     Repertoire findByDate(LocalDate date);
 
     @Query("SELECT r FROM Repertoire r WHERE r.date BETWEEN :startDate AND :endDate")
-    List<Repertoire> findAllBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    Page<Repertoire> findAllBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
 
     @Modifying
     @Query("DELETE FROM Repertoire r WHERE r.date < :date")

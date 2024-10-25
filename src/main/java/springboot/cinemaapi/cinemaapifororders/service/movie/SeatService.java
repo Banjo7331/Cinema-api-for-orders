@@ -6,7 +6,8 @@ import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatDto;
 import java.util.List;
 
 public interface SeatService {
-    List<SeatDto> getSeatsByRoomId(Long id);
+    List<SeatDto> findSeatsByRoomId(Long id);
+    List<SeatDto> findSeatsForSeance(Long repertoireId,Long seanceId);
     SeatDto updateSeat(Long seatId,SeatDto seatDto);
 
 }

@@ -15,7 +15,7 @@ public class AiMovieAdvicerController {
     public AiMovieAdvicerController(AiMovieAdvicerService aiMovieAdvicerService) {
         this.aiMovieAdvicerService = aiMovieAdvicerService;
     }
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
     @PostMapping("/newTest")
     public ResponseEntity<CinemaAiAnswer> getOpenAiResponse(@RequestBody UserPreferencesDto userPreferences){
 

@@ -1,6 +1,7 @@
 package springboot.cinemaapi.cinemaapifororders.controller.order;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,12 +24,13 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> findProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.findProductById(id));
     }
     @GetMapping
-    public ResponseEntity<List<ProductDto>> findAllProducts(@RequestParam(required = false) ProductType sectionType) {
-        List<ProductDto> products = productService.getProducts(sectionType);
+    public ResponseEntity<Page<ProductDto>> getAllProducts(@RequestParam(required = false) ProductType sectionType,@RequestParam(defaultValue = "0") Integer page,
+                                                            @RequestParam(defaultValue = "10") Integer size) {
+        Page<ProductDto> products = productService.findProducts(sectionType,page,size);
 
         return ResponseEntity.ok(products);
     }

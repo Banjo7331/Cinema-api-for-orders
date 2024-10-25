@@ -23,14 +23,14 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomDto> getAllRooms() {
+    public List<RoomDto> findAllRooms() {
         return roomRepository.findAll()
                 .stream()
                 .map(room -> modelMapper.map(room,RoomDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public RoomDto getRoomById(Long roomId) {
+    public RoomDto findRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(()->new RuntimeException("Room not found"));
 
         return modelMapper.map(room,RoomDto.class);
@@ -48,7 +48,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public RoomDto createRoom(RoomDto roomDto) {
+    public RoomDto addRoom(RoomDto roomDto) {
         Room room = modelMapper.map(roomDto,Room.class);
 
         Room createdRoom = roomRepository.save(room);

@@ -1,6 +1,8 @@
 package springboot.cinemaapi.cinemaapifororders.service.movie.impl;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
@@ -17,7 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.springframework.data.domain.Pageable;
 @Service
 public class MovieServiceImpl implements MovieService {
 
@@ -34,22 +36,24 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<MovieDto> getAllMovies() {
-        List<MovieDto> movies = movieRepository.findAll().stream().map(movie -> modelMapper.map(movie, MovieDto.class))
-                .collect(Collectors.toList());
+    public Page<MovieDto> findAllMovies(Integer page, Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<MovieDto> movies = movieRepository.findAll(pageable).map(movie -> modelMapper.map(movie, MovieDto.class));
 
         return  movies;
     }
 
     @Override
-    public MovieDto getMovieById(Long movieId) {
+    public MovieDto findMovieById(Long movieId) {
         Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new RuntimeException("Movie not found"));
 
         return modelMapper.map(movie, MovieDto.class);
     }
 
     @Override
-    public List<MovieDto> getMoviesByMovieCategory(MovieCategory movieCategory) {
+    public List<MovieDto> findMoviesByMovieCategory(MovieCategory movieCategory) {
         List<MovieDto> movies = movieRepository.findMoviesByMovieCategory(movieCategory).stream().map(movie -> modelMapper.map(movie, MovieDto.class))
                 .collect(Collectors.toList());
 

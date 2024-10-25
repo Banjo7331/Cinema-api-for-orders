@@ -2,10 +2,12 @@ package springboot.cinemaapi.cinemaapifororders.controller.movie;
 
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import springboot.cinemaapi.cinemaapifororders.entity.reservation.Movie;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.MovieDto;
 import springboot.cinemaapi.cinemaapifororders.service.movie.MovieService;
 
@@ -22,20 +24,21 @@ public class MovieController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MovieDto>> findAllMovies() {
-        List<MovieDto> movies = movieService.getAllMovies();
+    public ResponseEntity<Page<MovieDto>> getAllMovies(@RequestParam(defaultValue = "0") Integer page,
+                                                        @RequestParam(defaultValue = "10") Integer size) {
+        Page<MovieDto> movies = movieService.findAllMovies(page,size);
 
         return ResponseEntity.ok(movies);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MovieDto> findMovieById(@PathVariable Long id) {
+    public ResponseEntity<MovieDto> getMovieById(@PathVariable Long id) {
 
-        return ResponseEntity.ok(movieService.getMovieById(id));
+        return ResponseEntity.ok(movieService.findMovieById(id));
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PostMapping
-    public ResponseEntity<MovieDto> addMovie(@Valid @RequestBody MovieDto movie) {
+    public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody MovieDto movie) {
         return new ResponseEntity<>(movieService.addMovie(movie),HttpStatus.CREATED);
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")

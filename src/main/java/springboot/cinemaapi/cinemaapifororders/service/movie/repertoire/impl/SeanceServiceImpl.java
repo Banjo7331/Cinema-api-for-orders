@@ -1,10 +1,14 @@
 package springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.impl;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.*;
 import springboot.cinemaapi.cinemaapifororders.external.service.EmailService;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatDto;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.RepertoireDto;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.repertoire.SeanceDto;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
 import springboot.cinemaapi.cinemaapifororders.repository.*;
@@ -41,16 +45,17 @@ public class SeanceServiceImpl implements SeanceService {
     }
 
     @Override
-    public List<SeanceDto> getSeancesForRepertoire(Long repertoireId) {
-        List<Seance> seances = seanceRepository.findByRepertoireId(repertoireId);
+    public Page<SeanceDto> findSeancesForRepertoire(Long repertoireId, Integer page, Integer size) {
 
-        return seances.stream()
-                .map(seance -> modelMapper.map(seance,SeanceDto.class))
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Seance> seances = seanceRepository.findByRepertoireId(repertoireId,pageable);
+
+        return seances.map(seance ->modelMapper.map(seance, SeanceDto.class));
     }
 
     @Override
-    public SeanceDto getSeanceById(Long seanceId, Long repertoireId) {
+    public SeanceDto findSeanceById(Long seanceId, Long repertoireId) {
         Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
         Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
@@ -60,40 +65,6 @@ public class SeanceServiceImpl implements SeanceService {
         }
 
         return modelMapper.map(seance,SeanceDto.class);
-    }
-
-    @Override
-    public List<ReservationDto> findReservationsBySeanceId(Long repertoireId,Long seanceId) {
-        Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
-
-        Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
-
-        if(!seance.getRepertoire().getId().equals(repertoire.getId())){
-            throw new RuntimeException("Seance does not belong to repertoire");
-        }
-
-        List<ReservationDto> reservationList = reservationRepository.findReservationsBySeance(seance).stream().map(reservation -> modelMapper.map(reservation, ReservationDto.class))
-                .collect(Collectors.toList());
-
-        return reservationList;
-    }
-
-    @Override
-    public List<SeatDto> getReservedSeatsForSeance(Long repertoireId,Long seanceId) {
-        Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
-
-        Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
-
-        if(!seance.getRepertoire().getId().equals(repertoire.getId())){
-            throw new RuntimeException("Seance does not belong to repertoire");
-        }
-
-        List<Reservation> reservationList = reservationRepository.findReservationsBySeance(seance);
-
-        return reservationList.stream()
-                .flatMap(reservation -> reservation.getSeats().stream())
-                .map(seat -> modelMapper.map(seat, SeatDto.class))
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -121,7 +92,7 @@ public class SeanceServiceImpl implements SeanceService {
     }
 
     @Override
-    public SeanceDto createSeance(Long repertoireId, SeanceDto seanceDto) {
+    public SeanceDto addSeance(Long repertoireId, SeanceDto seanceDto) {
 
         Seance seance = modelMapper.map(seanceDto, Seance.class);
 

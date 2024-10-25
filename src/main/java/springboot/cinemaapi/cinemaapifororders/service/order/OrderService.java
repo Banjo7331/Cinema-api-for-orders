@@ -4,8 +4,8 @@ import springboot.cinemaapi.cinemaapifororders.entity.order.Order;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.order.OrderDto;
 
 public interface OrderService {
-    OrderDto createOrder(OrderDto order);
+    OrderDto addOrder(OrderDto order);
     OrderDto updateOrder(Long id, OrderDto orderDto);
-    OrderDto getOrderById(Long orderId);
+    OrderDto findOrderById(Long orderId);
     void deleteOrderById(Long id);
 }

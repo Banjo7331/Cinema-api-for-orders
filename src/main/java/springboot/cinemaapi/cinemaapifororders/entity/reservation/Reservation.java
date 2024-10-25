@@ -64,7 +64,6 @@ public class Reservation {
     @JoinColumn(name = "reservation_id") // Foreign key in Seat table
     private List<Seat> seats;
 
-    @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
     private Order order;

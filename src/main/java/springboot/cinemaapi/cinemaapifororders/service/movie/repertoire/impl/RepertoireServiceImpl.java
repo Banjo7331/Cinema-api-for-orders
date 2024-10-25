@@ -1,6 +1,9 @@
 package springboot.cinemaapi.cinemaapifororders.service.movie.repertoire.impl;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,14 +37,14 @@ public class RepertoireServiceImpl implements RepertoireService {
     }
 
     @Override
-    public RepertoireDto getRepertoireById(Long repertoireId) {
+    public RepertoireDto findRepertoireById(Long repertoireId) {
         Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
         return modelMapper.map(repertoire, RepertoireDto.class);
     }
 
     @Override
-    public RepertoireDto getRepertoireByTheDate(LocalDate date) {
+    public RepertoireDto findRepertoireByTheDate(LocalDate date) {
         Repertoire repertoire = repertoireRepository.findByDate(date);
 
         return modelMapper.map(repertoire, RepertoireDto.class);
@@ -49,20 +52,23 @@ public class RepertoireServiceImpl implements RepertoireService {
     }
 
     @Override
-    public List<RepertoireDto> getFirst7Repertoires(LocalDate date) {
+    public Page<RepertoireDto> findRepertoires(LocalDate date,Integer page, Integer size) {
+        if (date == null) {
+            date = LocalDate.now();
+        }
+
         LocalDate startDate = date.minusDays(3);
         LocalDate endDate = date.plusDays(3);
 
-        List<Repertoire> repertoires = repertoireRepository.findAllBetweenDates(startDate, endDate);
+        Pageable pageable = PageRequest.of(page, size);
 
-        return repertoires.stream()
-                .map(repertoire ->modelMapper.map(repertoire, RepertoireDto.class))
-                .collect(Collectors.toList());
+        Page<Repertoire> repertoirePage = repertoireRepository.findAllBetweenDates(startDate, endDate, pageable);
 
+        return repertoirePage.map(repertoire -> modelMapper.map(repertoire, RepertoireDto.class));
     }
 
     @Override
-    public RepertoireDto createRepertoire(RepertoireDto repertoireDto) {
+    public RepertoireDto addRepertoire(RepertoireDto repertoireDto) {
         Repertoire repertoire = modelMapper.map(repertoireDto, Repertoire.class);
 
         Repertoire savedRepertoire = repertoireRepository.save(repertoire);

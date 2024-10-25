@@ -2,6 +2,10 @@ package springboot.cinemaapi.cinemaapifororders.service.order.impl;
 
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import springboot.cinemaapi.cinemaapifororders.entity.order.Product;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.order.ProductDto;
@@ -30,17 +34,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getProducts(ProductType type) {
-        List<Product> products;
+    public Page<ProductDto> findProducts(ProductType type, Integer page, Integer size) {
+
+        Page<Product> products;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("productType"));
         if(type == null){
-            products = productRepository.findAll();
+            products = productRepository.findAll(pageable);
         }else{
-            products = productRepository.findAllProductByProductType(type);
+            products = productRepository.findAllProductByProductType(type,pageable);
         }
 
-        return products.stream()
-                .map(product ->modelMapper.map(product, ProductDto.class))
-                .collect(Collectors.toList());
+        return products.map(product ->modelMapper.map(product, ProductDto.class));
 
     }
 

@@ -15,7 +15,7 @@ import springboot.cinemaapi.cinemaapifororders.service.order.ProductService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/order")
 public class OrderController {
 
     private OrderService orderService;
@@ -28,7 +28,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderDto> createOrder(@RequestBody @Valid OrderDto order) {
 
-        return new ResponseEntity<>(orderService.createOrder(order), HttpStatus.CREATED);
+        return new ResponseEntity<>(orderService.addOrder(order), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
@@ -41,7 +41,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable Long id) {
 
-        return ResponseEntity.ok(orderService.getOrderById(id));
+        return ResponseEntity.ok(orderService.findOrderById(id));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
@@ -52,8 +52,5 @@ public class OrderController {
 
         return ResponseEntity.ok("Order canceled!");
     }
-
-
-
 
 }

@@ -10,7 +10,7 @@ import springboot.cinemaapi.cinemaapifororders.service.movie.RoomService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rooms")
+@RequestMapping("/api/room")
 public class RoomController {
 
     private RoomService roomService;
@@ -20,19 +20,19 @@ public class RoomController {
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")
     @GetMapping
-    public List<RoomDto> getAllRooms() {
-        return roomService.getAllRooms();
+    public ResponseEntity<List<RoomDto>> getAllRooms() {
+        return ResponseEntity.ok(roomService.findAllRooms());
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")
     @GetMapping("/{id}")
     public ResponseEntity<RoomDto> getRoomById(@PathVariable Long id) {
-        return ResponseEntity.ok(roomService.getRoomById(id));
+        return ResponseEntity.ok(roomService.findRoomById(id));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<RoomDto> createRoom(@Valid @RequestBody RoomDto roomDto) {
-        return new ResponseEntity<>(roomService.createRoom(roomDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(roomService.addRoom(roomDto), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")

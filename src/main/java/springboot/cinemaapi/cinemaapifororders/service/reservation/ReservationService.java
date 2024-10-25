@@ -1,21 +1,23 @@
 package springboot.cinemaapi.cinemaapifororders.service.reservation;
 
-import springboot.cinemaapi.cinemaapifororders.entity.reservation.Reservation;
+import org.springframework.data.domain.Page;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
 
 import java.util.List;
 
 public interface ReservationService {
-    ReservationDto createReservation(ReservationDto reservation);
-    List<ReservationDto> findReservationsByEmail(String email);
+    ReservationDto addReservation(ReservationDto reservation);
+    Page<ReservationDto> findReservationsByEmail(String email,Integer page, Integer size);
 
-    List<ReservationDto> findReservationsByPhoneNumber(String phoneNumber);
+    Page<ReservationDto> findReservationsByPhoneNumber(String phoneNumber,Integer page, Integer size);
 
-    List<ReservationDto> getAllReservationsForUser(Long id);
+    Page<ReservationDto> findReservationsBySeanceId(Long repertoireId, Long seanceId, Integer page, Integer size);
 
-    List<ReservationDto> getAllReservations();
+    Page<ReservationDto> findAllReservationsForUser(Long id,Integer page, Integer size);
 
-    ReservationDto getReservationById(Long id);
+    Page<ReservationDto> findAllReservations(Integer page, Integer size);
+
+    ReservationDto findReservationById(Long id);
 
     ReservationDto updateReservation(ReservationDto reservation, Long id);
 

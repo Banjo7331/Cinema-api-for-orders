@@ -10,7 +10,7 @@ import springboot.cinemaapi.cinemaapifororders.service.movie.SeatService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rooms/{roomId}")
+@RequestMapping("/api/room/{roomId}")
 public class SeatController {
 
     private SeatService seatService;
@@ -23,7 +23,12 @@ public class SeatController {
     @GetMapping("/seats")
     public ResponseEntity<List<SeatDto>> getSeats(@PathVariable Long roomId) {
 
-        return ResponseEntity.ok(seatService.getSeatsByRoomId(roomId));
+        return ResponseEntity.ok(seatService.findSeatsByRoomId(roomId));
+    }
+
+    @GetMapping("/{repertoireId}/seances/{seanceId}/available-seats")
+    public ResponseEntity<List<SeatDto>> getSeatsForSeance(@PathVariable Long seanceId, @PathVariable Long repertoireId) {
+        return ResponseEntity.ok(seatService.findSeatsForSeance(repertoireId,seanceId));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
