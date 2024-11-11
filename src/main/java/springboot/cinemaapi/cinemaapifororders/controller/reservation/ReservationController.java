@@ -33,7 +33,7 @@ public class ReservationController {
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER') or hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYER')")
     @PutMapping("/reservation/{id}")
     public ResponseEntity<ReservationDto> updateReservation(@Valid @RequestBody ReservationDto reservationDto, @PathVariable Long id) {
         ReservationDto updatedReservation= reservationService.updateReservation(reservationDto,id);

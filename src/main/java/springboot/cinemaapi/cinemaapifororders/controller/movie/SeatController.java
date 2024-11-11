@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatDto;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatForSeanceResponse;
 import springboot.cinemaapi.cinemaapifororders.service.movie.SeatService;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class SeatController {
     }
 
     @GetMapping("/{repertoireId}/seances/{seanceId}/available-seats")
-    public ResponseEntity<List<SeatDto>> getSeatsForSeance(@PathVariable Long seanceId, @PathVariable Long repertoireId) {
+    public ResponseEntity<List<SeatForSeanceResponse>> getSeatsForSeance(@PathVariable Long seanceId, @PathVariable Long repertoireId) {
         return ResponseEntity.ok(seatService.findSeatsForSeance(repertoireId,seanceId));
     }
 

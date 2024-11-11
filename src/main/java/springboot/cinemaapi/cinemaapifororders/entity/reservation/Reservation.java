@@ -1,6 +1,7 @@
 package springboot.cinemaapi.cinemaapifororders.entity.reservation;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -29,12 +30,12 @@ public class Reservation {
     private Long id;
 
     @NotNull
-    @Min(1)
+    @Min(value = 1, message = "numberOfViewers must be at least 1")
     @Column
     private Integer numberOfViewers;
 
     @NotNull
-    @Pattern(regexp = "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email address")
+    @Email(message = "Invalid email address")
     @Column
     private String email;
 
@@ -60,8 +61,12 @@ public class Reservation {
     private User user;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "reservation_id") // Foreign key in Seat table
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "reservation_seat",
+            joinColumns = @JoinColumn(name = "reservation_id"),
+            inverseJoinColumns = @JoinColumn(name = "seat_id")
+    )
     private List<Seat> seats;
 
     @OneToOne(fetch = FetchType.EAGER)

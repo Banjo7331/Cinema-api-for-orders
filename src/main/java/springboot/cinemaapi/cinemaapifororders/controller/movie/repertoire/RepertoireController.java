@@ -34,7 +34,7 @@ public class RepertoireController {
     }
 
     @GetMapping()
-    public ResponseEntity<Page<RepertoireDto>> getRepertoireForNextWeek(@RequestParam(required = false) LocalDate date, @RequestParam(defaultValue = "0") Integer page,
+    public ResponseEntity<Page<RepertoireDto>> getRepertoires(@RequestParam(required = false) LocalDate date, @RequestParam(defaultValue = "0") Integer page,
                                                                         @RequestParam(defaultValue = "7") Integer size) {
 
         return ResponseEntity.ok(repertoireService.findRepertoires(date,page,size));

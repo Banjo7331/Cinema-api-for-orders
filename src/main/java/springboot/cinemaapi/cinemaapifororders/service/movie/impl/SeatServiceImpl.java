@@ -5,11 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import springboot.cinemaapi.cinemaapifororders.entity.reservation.*;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatDto;
+import springboot.cinemaapi.cinemaapifororders.payload.dto.movie.SeatForSeanceResponse;
 import springboot.cinemaapi.cinemaapifororders.payload.dto.reservation.ReservationDto;
 import springboot.cinemaapi.cinemaapifororders.repository.*;
 import springboot.cinemaapi.cinemaapifororders.service.movie.SeatService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,20 +46,35 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public List<SeatDto> findSeatsForSeance(Long repertoireId,Long seanceId) {
-        Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
+    public List<SeatForSeanceResponse> findSeatsForSeance(Long repertoireId, Long seanceId) {
+        Repertoire repertoire = repertoireRepository.findById(repertoireId)
+                .orElseThrow(() -> new RuntimeException("Repertoire not found"));
+        Seance seance = seanceRepository.findById(seanceId)
+                .orElseThrow(() -> new RuntimeException("Seance not found"));
 
-        Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
-
-        if(!seance.getRepertoire().getId().equals(repertoire.getId())){
+        if (!seance.getRepertoire().getId().equals(repertoire.getId())) {
             throw new RuntimeException("Seance does not belong to repertoire");
         }
 
         List<Reservation> reservationList = reservationRepository.findReservationsBySeance(seance);
-
-        return reservationList.stream()
+        Set<Long> reservedSeatIds = reservationList.stream()
                 .flatMap(reservation -> reservation.getSeats().stream())
-                .map(seat -> modelMapper.map(seat, SeatDto.class))
+                .map(Seat::getId)
+                .collect(Collectors.toSet());
+
+        List<Seat> allSeatsInRoom = seatRepository.findAllByRoomId(seance.getRoom().getId());
+
+        return allSeatsInRoom.stream()
+                .map(seat -> {
+                    SeatForSeanceResponse response = new SeatForSeanceResponse();
+                    response.setId(seat.getId());
+                    response.setNumber(seat.getNumber());
+                    response.setSeatType(seat.getSeatType());
+                    response.setRoomId(seat.getRoom().getId());
+                    response.setBroken(seat.getBroken());
+                    response.setAvailable(!reservedSeatIds.contains(seat.getId()));
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 

@@ -10,12 +10,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(HttpClientErrorException.class)
-  public ResponseEntity<ErrorDetails> TooManyAiApiCallsException(TooManyAICallsException exception, WebRequest request) {
+  public ResponseEntity<ErrorDetails> handleTooManyAiCallsException(TooManyAICallsException exception, WebRequest request) {
 
     ErrorDetails errorDetails = new ErrorDetails(
             exception.getMessage(),
@@ -23,5 +24,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             request.getDescription(false)
     );
     return new ResponseEntity<>(errorDetails, HttpStatus.TOO_MANY_REQUESTS);
+  }
+
+  @ExceptionHandler(ReservationLimitExceededException.class)
+  public ResponseEntity<ErrorDetails> handleReservationLimitExceededException(ReservationLimitExceededException exception, WebRequest request) {
+
+
+    ErrorDetails errorDetails = new ErrorDetails(
+            exception.getMessage(),
+            LocalDate.now(),
+            request.getDescription(false)
+    );
+    return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
   }
 }
