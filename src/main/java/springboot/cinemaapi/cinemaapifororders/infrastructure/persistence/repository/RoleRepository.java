@@ -1,0 +1,10 @@
+package springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import springboot.cinemaapi.cinemaapifororders.domain.model.user.Role;
+
+import java.util.Optional;
+
+public interface RoleRepository extends JpaRepository<Role, Long> {
+    Optional<Role> findByName(String name);
+}
