@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Movie;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Reservation;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
-import springboot.cinemaapi.cinemaapifororders.infrastructure.external.email.EmailService;
 import springboot.cinemaapi.cinemaapifororders.application.dto.MovieDto;
 import springboot.cinemaapi.cinemaapifororders.domain.enums.MovieCategory;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.MovieRepository;
@@ -27,12 +26,12 @@ public class MovieServiceImpl implements MovieService {
 
     private ModelMapper modelMapper;
 
-    private EmailService emailService;
+    private NotifyReservationDeletionUseCase notifyReservationDeletionUseCase;
 
-    public MovieServiceImpl(MovieRepository movieRepository, ModelMapper modelMapper, EmailService emailService) {
+    public MovieServiceImpl(MovieRepository movieRepository, ModelMapper modelMapper, NotifyReservationDeletionUseCase notifyReservationDeletionUseCase) {
         this.movieRepository = movieRepository;
         this.modelMapper = modelMapper;
-        this.emailService = emailService;
+        this.notifyReservationDeletionUseCase = notifyReservationDeletionUseCase;
     }
 
     @Override
@@ -96,7 +95,7 @@ public class MovieServiceImpl implements MovieService {
 
             }).collect(Collectors.toList());
 
-            emailService.notifyReservationDeletion( reservationListOfLessThanWeekCreated,"Deleted Movie from Repertoires: " + movie.getName(),"All seances for this movie were deleted." +
+            notifyReservationDeletionUseCase.notifyReservationDeletion( reservationListOfLessThanWeekCreated,"Deleted Movie from Repertoires: " + movie.getName(),"All seances for this movie were deleted." +
                     " Money from ticked and accessories ordered will be returned in 3 days");
         }
 

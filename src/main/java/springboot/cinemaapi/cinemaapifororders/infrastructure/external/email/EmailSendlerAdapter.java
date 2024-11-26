@@ -6,28 +6,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import springboot.cinemaapi.cinemaapifororders.domain.model.Reservation;
+import springboot.cinemaapi.cinemaapifororders.application.ports.output.EmailSendlerPort;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-@Service
-public class EmailServiceImpl implements EmailService {
+@Component
+public class EmailSendlerAdapter implements EmailSendlerPort {
 
     @Value("${spring.mail.username}")
     private String fromEmail;
 
     private JavaMailSender mailSender;
 
-    public EmailServiceImpl(JavaMailSender javaMailSender) {
-        this.mailSender = javaMailSender;
-    }
+    public EmailSendlerAdapter(JavaMailSender mailSender) {this.mailSender = mailSender;}
 
-    private void sendEmail(MultipartFile[] files, String to,String[] cc, String subject, String body){
+    public void sendEmail(MultipartFile[] files, String to, String[] cc, String subject, String body){
         try {
             MimeMessage message = mailSender.createMimeMessage();
 
@@ -49,25 +45,6 @@ public class EmailServiceImpl implements EmailService {
         }catch (MessagingException | IOException e){
             throw new RuntimeException(e);
         }
-
-    }
-
-
-    @Override
-    public void notifyReservationDeletion(List<Reservation> reservations, String subject, String message) {
-
-        List<String> reservationEmails = reservations
-                .stream()
-                .map(Reservation::getEmail)
-                .collect(Collectors.toList());
-
-        sendEmail(
-                new MultipartFile[]{},
-                "",
-                reservationEmails.toArray(new String[0]),
-                subject,
-                message
-        );
 
     }
 }

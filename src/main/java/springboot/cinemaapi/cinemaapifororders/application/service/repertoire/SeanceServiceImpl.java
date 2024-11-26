@@ -5,11 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import springboot.cinemaapi.cinemaapifororders.application.service.NotifyReservationDeletionUseCase;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Movie;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
 import springboot.cinemaapi.cinemaapifororders.domain.model.room.Room;
-import springboot.cinemaapi.cinemaapifororders.infrastructure.external.email.EmailService;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.*;
 import springboot.cinemaapi.cinemaapifororders.application.dto.repertoire.SeanceDto;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.repertoire.SeanceService;
@@ -23,22 +23,19 @@ public class SeanceServiceImpl implements SeanceService {
 
     private MovieRepository movieRepository;
 
-    private ReservationRepository reservationRepository;
-
     private RoomRepository roomRepository;
 
     private ModelMapper modelMapper;
 
-    private EmailService emailService;
+    private NotifyReservationDeletionUseCase notifyReservationDeletionUseCase;
 
-    public SeanceServiceImpl(SeanceRepository seanceRepository, ModelMapper modelMapper, RepertoireRepository repertoireRepository,ReservationRepository reservationRepository, MovieRepository movieRepository, RoomRepository roomRepository, EmailService emailService) {
+    public SeanceServiceImpl(SeanceRepository seanceRepository, ModelMapper modelMapper, RepertoireRepository repertoireRepository, ReservationRepository reservationRepository, MovieRepository movieRepository, RoomRepository roomRepository, NotifyReservationDeletionUseCase notifyReservationDeletionUseCase) {
         this.seanceRepository = seanceRepository;
         this.repertoireRepository = repertoireRepository;
-        this.reservationRepository = reservationRepository;
         this.modelMapper = modelMapper;
         this.movieRepository = movieRepository;
         this.roomRepository = roomRepository;
-        this.emailService = emailService;
+        this.notifyReservationDeletionUseCase = notifyReservationDeletionUseCase;
     }
 
     @Override
@@ -122,7 +119,7 @@ public class SeanceServiceImpl implements SeanceService {
 
         seanceRepository.delete(seance);
 
-        emailService.notifyReservationDeletion(seance.getReservations(),"Deleted reservation for Seance of Movie: "+movieName,"The reservations were deleted from database." +
+        notifyReservationDeletionUseCase.notifyReservationDeletion(seance.getReservations(),"Deleted reservation for Seance of Movie: "+movieName,"The reservations were deleted from database." +
                 " Money from ticked and accessories ordered will be returned in 3 days");
 
     }

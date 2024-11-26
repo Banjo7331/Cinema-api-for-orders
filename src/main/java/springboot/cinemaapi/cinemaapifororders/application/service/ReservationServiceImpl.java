@@ -13,7 +13,6 @@ import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Repertoir
 import springboot.cinemaapi.cinemaapifororders.domain.model.Reservation;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
 import springboot.cinemaapi.cinemaapifororders.domain.exception.ReservationLimitExceededException;
-import springboot.cinemaapi.cinemaapifororders.infrastructure.external.email.EmailService;
 import springboot.cinemaapi.cinemaapifororders.application.dto.ReservationDto;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.MovieRepository;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.RepertoireRepository;
@@ -44,14 +43,15 @@ public class ReservationServiceImpl implements ReservationService {
 
     private ModelMapper modelMapper;
 
-    private EmailService emailService;
+    private NotifyReservationDeletionUseCase notifyReservationDeletionUseCase;
 
-    public ReservationServiceImpl(ModelMapper modelMapper, ReservationRepository reservationRepository, MovieRepository movieRepository, SeanceRepository seanceRepository, RepertoireRepository repertoireRepository, EmailService emailService) {
+    public ReservationServiceImpl(ModelMapper modelMapper, ReservationRepository reservationRepository, MovieRepository movieRepository, SeanceRepository seanceRepository, RepertoireRepository repertoireRepository, NotifyReservationDeletionUseCase notifyReservationDeletionUseCase) {
         this.modelMapper = modelMapper;
         this.reservationRepository = reservationRepository;
         this.movieRepository = movieRepository;
         this.seanceRepository = seanceRepository;
-        this.emailService = emailService;
+        this.notifyReservationDeletionUseCase = notifyReservationDeletionUseCase;
+
         this.repertoireRepository = repertoireRepository;
     }
 
@@ -148,7 +148,7 @@ public class ReservationServiceImpl implements ReservationService {
         Date reservationMadeDate = reservation.getDateCreated();
 
         if(!reservation.getAttendance() && checkDateIfRefundShouldBeDone(reservationMadeDate)) {
-            emailService.notifyReservationDeletion(Collections.singletonList(reservation),"Deleted reservation with id:"+reservation.getId(),"Reservation was deleted with id:"+reservation.getId() +
+            notifyReservationDeletionUseCase.notifyReservationDeletion(Collections.singletonList(reservation),"Deleted reservation with id:"+reservation.getId(),"Reservation was deleted with id:"+reservation.getId() +
                     " Money from ticket and accessories ordered will be returned in 3 days");
         }
 
@@ -172,7 +172,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservationRepository.deleteAllByUserId(userId);
 
-        emailService.notifyReservationDeletion(reservationListOfLessThanWeekCreated,"Deleted all reservations for User with Id:"+userId,"Reservations was deleted for User with id:"+userId +
+        notifyReservationDeletionUseCase.notifyReservationDeletion(reservationListOfLessThanWeekCreated,"Deleted all reservations for User with Id:"+userId,"Reservations was deleted for User with id:"+userId +
                 " Money from ticket and accessories ordered will be returned in 3 days");
     }
 
@@ -186,7 +186,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservationRepository.deleteBySeanceId(id);
 
-        emailService.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for movie: " + movieName,"The seance was deleted from the repertoire." +
+        notifyReservationDeletionUseCase.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for movie: " + movieName,"The seance was deleted from the repertoire." +
                 " Money from ticked and accessories ordered will be returned in 3 days");
 
     }
@@ -205,7 +205,7 @@ public class ReservationServiceImpl implements ReservationService {
             List<Long> seanceIds = seanceRepository.findSeanceIdsByMovieId(movie.getId());
 
             for (Seance seance : seances) {
-                emailService.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for movie: " + movieName,"The seance was deleted from the repertoire." +
+                notifyReservationDeletionUseCase.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for movie: " + movieName,"The seance was deleted from the repertoire." +
                         " Money from ticked and accessories ordered will be returned in 3 days");
             }
 

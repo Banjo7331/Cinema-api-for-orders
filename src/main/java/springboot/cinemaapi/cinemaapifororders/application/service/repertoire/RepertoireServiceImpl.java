@@ -6,9 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.cinemaapi.cinemaapifororders.application.service.NotifyReservationDeletionUseCase;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
-import springboot.cinemaapi.cinemaapifororders.infrastructure.external.email.EmailService;
 import springboot.cinemaapi.cinemaapifororders.application.dto.repertoire.RepertoireDto;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.RepertoireRepository;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.repertoire.RepertoireService;
@@ -23,13 +23,13 @@ public class RepertoireServiceImpl implements RepertoireService {
 
     private ModelMapper modelMapper;
 
-    private EmailService emailService;
+    private NotifyReservationDeletionUseCase notifyReservationDeletionUseCase;
 
 
-    public RepertoireServiceImpl(RepertoireRepository repertoireRepository, ModelMapper modelMapper, EmailService emailService) {
+    public RepertoireServiceImpl(RepertoireRepository repertoireRepository, ModelMapper modelMapper, NotifyReservationDeletionUseCase notifyReservationDeletionUseCase) {
         this.repertoireRepository = repertoireRepository;
         this.modelMapper = modelMapper;
-        this.emailService = emailService;
+        this.notifyReservationDeletionUseCase = notifyReservationDeletionUseCase;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class RepertoireServiceImpl implements RepertoireService {
         repertoireRepository.delete(repertoire);
 
         for (Seance seance : seances) {
-            emailService.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for repertoire of the day: " + repertoire.getDate(),"The seance were deleted from the repertoire." +
+            notifyReservationDeletionUseCase.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for repertoire of the day: " + repertoire.getDate(),"The seance were deleted from the repertoire." +
                     " Money from tickets and accessories ordered will be returned in 3 days");
         }
 
