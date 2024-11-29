@@ -59,17 +59,23 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Email is already in use");
         }
 
+        if(userRepository.existsByPhoneNumber(registerDto.getPhoneNumber())){
+            throw new RuntimeException("Email is already in use");
+        }
+
         User user = new User();
         user.setUsername(registerDto.getUsername());
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        user.setPhoneNumber(registerDto.getPhoneNumber());
 
         Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName("USER").get();
+        Role userRole = roleRepository.findByName("ROLE_USER").get();
         roles.add(userRole);
         user.setRoles(roles);
 
         userRepository.save(user);
+        System.out.println("User saved successfully.");
 
         return "User Registered Successfully";
     }

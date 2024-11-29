@@ -18,14 +18,13 @@ public class OrderDto {
 
     private Long id;
 
-    private List<ProductDto> orderItems;
+    private List<Long> orderedItemsIds;
 
     @Pattern(regexp = "^[A-Z]{6}$", message = "The code must consist of exactly 6 uppercase letters")
     private String couponCode;
 
     private Boolean  isReservationForMovie;
 
-    @NotNull
     private BigDecimal totalPrice;
 
 

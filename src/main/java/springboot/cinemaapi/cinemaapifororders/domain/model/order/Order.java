@@ -38,6 +38,6 @@ public class Order {
     private BigDecimal totalPrice;
 
     @Size(min = 1, max = 50)
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Product> orderItems = new ArrayList<>();
 }

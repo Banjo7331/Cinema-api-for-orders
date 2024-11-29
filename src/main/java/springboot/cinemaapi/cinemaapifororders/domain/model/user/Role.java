@@ -24,4 +24,7 @@ public class Role {
     @Size(min = 3, max = 15)
     @Column
     private String name;
+
+    public Role(@NotNull @Size(min = 3, max = 15) String name){
+    }
 }

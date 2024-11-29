@@ -5,34 +5,50 @@ import org.springframework.stereotype.Service;
 import springboot.cinemaapi.cinemaapifororders.domain.model.order.Order;
 import springboot.cinemaapi.cinemaapifororders.application.dto.order.OrderDto;
 import springboot.cinemaapi.cinemaapifororders.application.dto.order.ProductDto;
+import springboot.cinemaapi.cinemaapifororders.domain.model.order.Product;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.OrderRepository;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.order.OrderService;
+import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.ProductRepository;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
 
+    private ProductRepository productRepository;
+
     private ModelMapper modelMapper;
 
 
-    public OrderServiceImpl(OrderRepository orderRepository, ModelMapper modelMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository, ModelMapper modelMapper) {
         this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
         this.modelMapper = modelMapper;
     }
 
 
     @Override
     public OrderDto addOrder(OrderDto orderDto) {
-
-
-        Order order = modelMapper.map(orderDto,Order.class);
+        Order order = modelMapper.map(orderDto, Order.class);
 
         order.setTotalPrice(calculatePrice(orderDto));
 
-        return modelMapper.map(orderRepository.save(order), OrderDto.class);
+        List<Product> products = orderDto.getOrderedItemsIds().stream()
+                .map(productId -> productRepository.findById(productId)
+                        .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + productId)))
+                .collect(Collectors.toList());
+
+        order.setOrderItems(products);
+
+        Order savedOrder = orderRepository.save(order);
+
+        // Convert the saved Order entity back to a DTO and return it
+        return modelMapper.map(savedOrder, OrderDto.class);
     }
 
     @Override
@@ -64,7 +80,12 @@ public class OrderServiceImpl implements OrderService {
     private BigDecimal calculatePrice(OrderDto order) {
         BigDecimal price = BigDecimal.ZERO;
 
-        for(ProductDto product : order.getOrderItems()){
+        List<Product> products = order.getOrderedItemsIds().stream()
+                .map(productId -> productRepository.findById(productId)
+                        .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + productId)))
+                .collect(Collectors.toList());
+
+        for(Product product : products){
             price = price.add(product.getPrice());
         }
 
