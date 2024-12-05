@@ -1,29 +1,32 @@
 package springboot.cinemaapi.cinemaapifororders.application.ports.input;
 
 import org.springframework.data.domain.Page;
-import springboot.cinemaapi.cinemaapifororders.application.dto.ReservationDto;
+import springboot.cinemaapi.cinemaapifororders.application.dto.reservation.ReservationRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.reservation.ReservationResponse;
+
+import java.util.UUID;
 
 public interface ReservationService {
-    ReservationDto addReservation(ReservationDto reservation);
-    Page<ReservationDto> findReservationsByEmail(String email,Integer page, Integer size);
+    ReservationResponse addReservation(ReservationRequest reservation);
+    Page<ReservationResponse> findReservationsByEmail(String email,Integer page, Integer size);
 
-    Page<ReservationDto> findReservationsByPhoneNumber(String phoneNumber,Integer page, Integer size);
+    Page<ReservationResponse> findReservationsByPhoneNumber(String phoneNumber,Integer page, Integer size);
 
-    Page<ReservationDto> findReservationsBySeanceId(Long repertoireId, Long seanceId, Integer page, Integer size);
+    Page<ReservationResponse> findReservationsBySeanceId(String repertoireId, String seanceId, Integer page, Integer size);
 
-    Page<ReservationDto> findAllReservationsForUser(Long id,Integer page, Integer size);
+    Page<ReservationResponse> findAllReservationsForUser(String id,Integer page, Integer size);
 
-    Page<ReservationDto> findAllReservations(Integer page, Integer size);
+    Page<ReservationResponse> findAllReservations(Integer page, Integer size);
 
-    ReservationDto findReservationById(Long id);
+    ReservationResponse findReservationById(String id);
 
-    ReservationDto updateReservation(ReservationDto reservation, Long id);
+    ReservationResponse updateReservation(ReservationRequest reservation, String id);
 
-    void deleteReservationById(Long id);
+    void deleteReservationById(String id);
 
-    void deleteAllUserReservations(Long id);
+    void deleteAllUserReservations(String id);
 
-    void deleteReservationsForSeance(Long id);
+    void deleteReservationsForSeance(String id);
 
     void deleteReservationsForMovie(String id);
 

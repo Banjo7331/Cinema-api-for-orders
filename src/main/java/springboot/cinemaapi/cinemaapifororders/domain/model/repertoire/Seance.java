@@ -13,6 +13,7 @@ import springboot.cinemaapi.cinemaapifororders.domain.model.room.Room;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -23,8 +24,9 @@ import java.util.List;
 public class Seance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "CHAR(36)", unique = true, nullable = false)
+    private String id;
 
     @NotNull
     @Column

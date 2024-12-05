@@ -3,5 +3,7 @@ package springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repos
 import org.springframework.data.jpa.repository.JpaRepository;
 import springboot.cinemaapi.cinemaapifororders.domain.model.order.Order;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+import java.util.UUID;
+
+public interface OrderRepository extends JpaRepository<Order, String> {
 }

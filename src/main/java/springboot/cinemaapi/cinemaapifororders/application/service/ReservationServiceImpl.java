@@ -8,12 +8,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import springboot.cinemaapi.cinemaapifororders.application.dto.reservation.ReservationRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.reservation.ReservationResponse;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Movie;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Reservation;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
 import springboot.cinemaapi.cinemaapifororders.domain.exception.ReservationLimitExceededException;
-import springboot.cinemaapi.cinemaapifororders.application.dto.ReservationDto;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.MovieRepository;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.RepertoireRepository;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.ReservationRepository;
@@ -56,22 +57,22 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Page<ReservationDto> findReservationsByEmail(String email, Integer page, Integer size) {
+    public Page<ReservationResponse> findReservationsByEmail(String email, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size,Sort.by("dateCreated"));
 
-        return reservationRepository.findAllByEmail(email,pageable).map(reservation -> modelMapper.map(reservation, ReservationDto.class));
+        return reservationRepository.findAllByEmail(email,pageable).map(reservation -> modelMapper.map(reservation, ReservationResponse.class));
     }
 
     @Override
-    public Page<ReservationDto> findReservationsByPhoneNumber(String phoneNumber,Integer page, Integer size) {
+    public Page<ReservationResponse> findReservationsByPhoneNumber(String phoneNumber,Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size,Sort.by("dateCreated"));
 
-        return reservationRepository.findAllByPhoneNumber(phoneNumber,pageable).map(reservation -> modelMapper.map(reservation, ReservationDto.class));
+        return reservationRepository.findAllByPhoneNumber(phoneNumber,pageable).map(reservation -> modelMapper.map(reservation, ReservationResponse.class));
     }
 
 
     @Override
-    public ReservationDto addReservation(ReservationDto reservationDto) {
+    public ReservationResponse addReservation(ReservationRequest reservationDto) {
         Reservation reservation;
         Reservation savedReservation;
 
@@ -83,22 +84,22 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ReservationLimitExceededException("Osiągnięto dzienny limit zamówień na adres e-mail: " + reservationDto.getEmail());
         }
 
-        return modelMapper.map(savedReservation,ReservationDto.class);
+        return modelMapper.map(savedReservation,ReservationResponse.class);
     }
 
 
     @Override
-    public Page<ReservationDto> findAllReservationsForUser(Long id,Integer page, Integer size) {
+    public Page<ReservationResponse> findAllReservationsForUser(String id,Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size,Sort.by("dateCreated"));
 
-        Page<ReservationDto> reservationList = reservationRepository.findAllByUserId(id,pageable).map( reservation -> modelMapper.map(reservation, ReservationDto.class));
+        Page<ReservationResponse> reservationList = reservationRepository.findAllByUserId(id,pageable).map( reservation -> modelMapper.map(reservation, ReservationResponse.class));
 
         return reservationList;
     }
 
     @Override
-    public Page<ReservationDto> findReservationsBySeanceId(Long repertoireId, Long seanceId, Integer page, Integer size) {
+    public Page<ReservationResponse> findReservationsBySeanceId(String repertoireId, String seanceId, Integer page, Integer size) {
         Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
         Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
@@ -111,37 +112,37 @@ public class ReservationServiceImpl implements ReservationService {
 
         Page<Reservation> reservationList = reservationRepository.findReservationsBySeance(seance,pageable);
 
-        return reservationList.map(reservation ->modelMapper.map(reservation, ReservationDto.class));
+        return reservationList.map(reservation ->modelMapper.map(reservation, ReservationResponse.class));
     }
 
     @Override
-    public Page<ReservationDto> findAllReservations(Integer page, Integer size) {
+    public Page<ReservationResponse> findAllReservations(Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size,Sort.by("dateCreated"));
 
-        Page<ReservationDto> reservationList = reservationRepository.findAll(pageable).map( reservation -> modelMapper.map(reservation, ReservationDto.class));
+        Page<ReservationResponse> reservationList = reservationRepository.findAll(pageable).map( reservation -> modelMapper.map(reservation, ReservationResponse.class));
 
         return reservationList;
     }
 
     @Override
-    public ReservationDto findReservationById(Long id) {
-        return modelMapper.map(reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found")), ReservationDto.class);
+    public ReservationResponse findReservationById(String id) {
+        return modelMapper.map(reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found")), ReservationResponse.class);
     }
 
     @Override
-    public ReservationDto updateReservation(ReservationDto reservationDto, Long id) {
+    public ReservationResponse updateReservation(ReservationRequest reservationDto,String id) {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found"));
 
         modelMapper.map(reservationDto,reservation);
 
-        return modelMapper.map(reservationRepository.save(reservation),ReservationDto.class);
+        return modelMapper.map(reservationRepository.save(reservation),ReservationResponse.class);
 
     }
 
     @Transactional
     @Override
-    public void deleteReservationById(Long id) {
+    public void deleteReservationById(String id) {
 
         Reservation reservation = reservationRepository.findById(id).orElseThrow(()-> new RuntimeException("Reservation not found"));
 
@@ -158,7 +159,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
-    public void deleteAllUserReservations(Long userId) {
+    public void deleteAllUserReservations(String userId) {
 
         List<Reservation> reservationList = reservationRepository.findAllByUserId(userId);
 
@@ -178,7 +179,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Transactional
     @Override
-    public void deleteReservationsForSeance(Long id) {
+    public void deleteReservationsForSeance(String id) {
 
         Seance seance = seanceRepository.findById(id).orElseThrow(()-> new RuntimeException("Seance not found"));
 
@@ -202,7 +203,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             List<Seance> seances = movie.getSeances();
 
-            List<Long> seanceIds = seanceRepository.findSeanceIdsByMovieId(movie.getId());
+            List<String> seanceIds = seanceRepository.findSeanceIdsByMovieId(movie.getId());
 
             for (Seance seance : seances) {
                 notifyReservationDeletionUseCase.notifyReservationDeletion(seance.getReservations(),"Deleted Seance for movie: " + movieName,"The seance was deleted from the repertoire." +

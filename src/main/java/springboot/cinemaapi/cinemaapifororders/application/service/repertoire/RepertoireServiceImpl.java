@@ -6,15 +6,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.cinemaapi.cinemaapifororders.application.dto.repertoire.RepertoireRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.repertoire.RepertoireResponse;
 import springboot.cinemaapi.cinemaapifororders.application.service.NotifyReservationDeletionUseCase;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
-import springboot.cinemaapi.cinemaapifororders.application.dto.repertoire.RepertoireDto;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.RepertoireRepository;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.repertoire.RepertoireService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RepertoireServiceImpl implements RepertoireService {
@@ -33,22 +35,22 @@ public class RepertoireServiceImpl implements RepertoireService {
     }
 
     @Override
-    public RepertoireDto findRepertoireById(Long repertoireId) {
+    public RepertoireResponse findRepertoireById(String repertoireId) {
         Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
-        return modelMapper.map(repertoire, RepertoireDto.class);
+        return modelMapper.map(repertoire, RepertoireResponse.class);
     }
 
     @Override
-    public RepertoireDto findRepertoireByTheDate(LocalDate date) {
+    public RepertoireResponse findRepertoireByTheDate(LocalDate date) {
         Repertoire repertoire = repertoireRepository.findByDate(date);
 
-        return modelMapper.map(repertoire, RepertoireDto.class);
+        return modelMapper.map(repertoire, RepertoireResponse.class);
 
     }
 
     @Override
-    public Page<RepertoireDto> findRepertoires(LocalDate date,Integer page, Integer size) {
+    public Page<RepertoireResponse> findRepertoires(LocalDate date,Integer page, Integer size) {
         if (date == null) {
             date = LocalDate.now();
         }
@@ -60,20 +62,20 @@ public class RepertoireServiceImpl implements RepertoireService {
 
         Page<Repertoire> repertoirePage = repertoireRepository.findAllBetweenDates(startDate, endDate, pageable);
 
-        return repertoirePage.map(repertoire -> modelMapper.map(repertoire, RepertoireDto.class));
+        return repertoirePage.map(repertoire -> modelMapper.map(repertoire, RepertoireResponse.class));
     }
 
     @Override
-    public RepertoireDto addRepertoire(RepertoireDto repertoireDto) {
+    public RepertoireResponse addRepertoire(RepertoireRequest repertoireDto) {
         Repertoire repertoire = modelMapper.map(repertoireDto, Repertoire.class);
 
         Repertoire savedRepertoire = repertoireRepository.save(repertoire);
 
-        return modelMapper.map(savedRepertoire, RepertoireDto.class);
+        return modelMapper.map(savedRepertoire, RepertoireResponse.class);
     }
 
     @Override
-    public RepertoireDto updateRepertoire(Long repertoireId,RepertoireDto repertoireDto) {
+    public RepertoireResponse updateRepertoire(String repertoireId, RepertoireRequest repertoireDto) {
 
         Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
@@ -82,11 +84,11 @@ public class RepertoireServiceImpl implements RepertoireService {
 
         repertoireRepository.save(repertoire);
 
-        return modelMapper.map(repertoire, RepertoireDto.class);
+        return modelMapper.map(repertoire, RepertoireResponse.class);
     }
 
     @Override
-    public void deleteRepertoireById(Long id) {
+    public void deleteRepertoireById(String id) {
         Repertoire repertoire = repertoireRepository.findById(id).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
         List<Seance> seances = repertoire.getSeancesList();

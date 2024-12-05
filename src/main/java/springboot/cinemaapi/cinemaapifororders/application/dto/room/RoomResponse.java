@@ -5,15 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomDto {
+public class RoomResponse {
 
-    private Long id;
+    private String id;
 
     private int number;
+
+    private int numberOfAllSeats;
 
     private int numberOfRows;
 

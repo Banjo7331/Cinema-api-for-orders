@@ -8,17 +8,16 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RepertoireDto {
-
-    private Long id;
+public class RepertoireResponse {
+    private String id;
 
     private LocalDate date;
 
-    @Size(min=1,max=30)
-    private List<SeanceDto> seancesList;
+    private List<SeanceResponse> seances;
 }

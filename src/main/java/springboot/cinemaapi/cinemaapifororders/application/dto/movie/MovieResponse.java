@@ -1,4 +1,4 @@
-package springboot.cinemaapi.cinemaapifororders.application.dto;
+package springboot.cinemaapi.cinemaapifororders.application.dto.movie;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,14 +7,14 @@ import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.domain.enums.MovieCategory;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieDto {
-
-    private Long id;
+public class MovieResponse {
+    private String id;
 
     private Long lengthInMinutes;
 

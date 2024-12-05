@@ -5,14 +5,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import springboot.cinemaapi.cinemaapifororders.application.dto.repertoire.SeanceRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.repertoire.SeanceResponse;
 import springboot.cinemaapi.cinemaapifororders.application.service.NotifyReservationDeletionUseCase;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Movie;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
 import springboot.cinemaapi.cinemaapifororders.domain.model.room.Room;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.*;
-import springboot.cinemaapi.cinemaapifororders.application.dto.repertoire.SeanceDto;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.repertoire.SeanceService;
+
+import java.util.UUID;
 
 @Service
 public class SeanceServiceImpl implements SeanceService {
@@ -39,17 +42,17 @@ public class SeanceServiceImpl implements SeanceService {
     }
 
     @Override
-    public Page<SeanceDto> findSeancesForRepertoire(Long repertoireId, Integer page, Integer size) {
+    public Page<SeanceResponse> findSeancesForRepertoire(String repertoireId, Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Seance> seances = seanceRepository.findByRepertoireId(repertoireId,pageable);
 
-        return seances.map(seance ->modelMapper.map(seance, SeanceDto.class));
+        return seances.map(seance ->modelMapper.map(seance, SeanceResponse.class));
     }
 
     @Override
-    public SeanceDto findSeanceById(Long seanceId, Long repertoireId) {
+    public SeanceResponse findSeanceById(String seanceId, String repertoireId) {
         Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
         Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
@@ -58,11 +61,11 @@ public class SeanceServiceImpl implements SeanceService {
             throw new RuntimeException("Seance does not belong to repertoire");
         }
 
-        return modelMapper.map(seance,SeanceDto.class);
+        return modelMapper.map(seance,SeanceResponse.class);
     }
 
     @Override
-    public SeanceDto updateSeance(Long seanceId, Long repertoireId, SeanceDto seanceDto) {
+    public SeanceResponse updateSeance(String seanceId, String repertoireId, SeanceRequest seanceDto) {
         Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
         Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));
@@ -82,11 +85,11 @@ public class SeanceServiceImpl implements SeanceService {
 
         Seance updatedSeance = seanceRepository.save(seance);
 
-        return modelMapper.map(updatedSeance,SeanceDto.class);
+        return modelMapper.map(updatedSeance,SeanceResponse.class);
     }
 
     @Override
-    public SeanceDto addSeance(Long repertoireId, SeanceDto seanceDto) {
+    public SeanceResponse addSeance(String repertoireId, SeanceRequest seanceDto) {
 
         Seance seance = modelMapper.map(seanceDto, Seance.class);
 
@@ -102,11 +105,11 @@ public class SeanceServiceImpl implements SeanceService {
 
         seanceRepository.save(seance);
 
-        return modelMapper.map(seance, SeanceDto.class);
+        return modelMapper.map(seance, SeanceResponse.class);
     }
 
     @Override
-    public void deleteSeance(Long seanceId, Long repertoireId) {
+    public void deleteSeance(String seanceId, String repertoireId) {
         Repertoire repertoire = repertoireRepository.findById(repertoireId).orElseThrow(()-> new RuntimeException("Repertoire not found"));
 
         Seance seance = seanceRepository.findById(seanceId).orElseThrow(()-> new RuntimeException("Seance not found"));

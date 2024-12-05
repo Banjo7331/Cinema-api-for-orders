@@ -9,6 +9,7 @@ import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.domain.enums.ProductType;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 
 @Getter
@@ -20,8 +21,9 @@ import java.math.BigDecimal;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "CHAR(36)", unique = true, nullable = false)
+    private String id;
 
     @NotNull
     @Size(min = 3, max = 15)

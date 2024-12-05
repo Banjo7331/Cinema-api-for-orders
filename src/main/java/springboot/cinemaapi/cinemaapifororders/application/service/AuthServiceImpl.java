@@ -74,7 +74,12 @@ public class AuthServiceImpl implements AuthService {
         roles.add(userRole);
         user.setRoles(roles);
 
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            e.printStackTrace(); // Log full exception for debugging
+            throw e; // Rethrow to maintain behavior
+        }
         System.out.println("User saved successfully.");
 
         return "User Registered Successfully";

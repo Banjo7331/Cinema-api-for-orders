@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.domain.enums.SeatType;
 
+import java.util.UUID;
+
 
 @Getter
 @Setter
@@ -19,8 +21,9 @@ import springboot.cinemaapi.cinemaapifororders.domain.enums.SeatType;
 public class Seat {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "CHAR(36)", unique = true, nullable = false)
+    private String id;
 
     @NotNull
     @Column

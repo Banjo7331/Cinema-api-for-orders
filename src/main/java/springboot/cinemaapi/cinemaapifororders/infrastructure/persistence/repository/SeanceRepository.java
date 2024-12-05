@@ -6,8 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface SeanceRepository extends JpaRepository<Seance, Long> {
-    Page<Seance> findByRepertoireId(Long repertoireId, Pageable pageable);
-    List<Long> findSeanceIdsByMovieId( Long movieId);
+public interface SeanceRepository extends JpaRepository<Seance, String> {
+    Page<Seance> findByRepertoireId(String repertoireId, Pageable pageable);
+    List<String> findSeanceIdsByMovieId(String movieId);
 }

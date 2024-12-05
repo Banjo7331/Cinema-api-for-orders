@@ -9,8 +9,9 @@ import org.springframework.data.repository.query.Param;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Repertoire;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-public interface RepertoireRepository extends JpaRepository<Repertoire, Long> {
+public interface RepertoireRepository extends JpaRepository<Repertoire, String> {
 
     Repertoire findByDate(LocalDate date);
 

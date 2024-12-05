@@ -5,19 +5,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springboot.cinemaapi.cinemaapifororders.domain.enums.SeatType;
-
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SeatDto {
+public class SeatResponse {
+
+    private String id;
 
     private Long number;
 
     private SeatType seatType;
 
-    private Long roomId;
+    private String roomId;
 
     private boolean broken;
+
 }

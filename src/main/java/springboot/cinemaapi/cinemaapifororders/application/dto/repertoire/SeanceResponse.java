@@ -6,22 +6,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SeanceDto {
+public class SeanceResponse {
 
-    private Long id;
+    private String id;
 
     private Integer takenSeats;
 
     private LocalTime hourOfStart;
 
-    private Long movieId;
+    private String movieId;
 
-
-    private Long roomId;
-
+    private String roomId;
 }

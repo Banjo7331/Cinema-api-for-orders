@@ -1,4 +1,4 @@
-INSERT INTO role (name) VALUES ('ROLE_ADMIN');
-INSERT INTO role (name) VALUES ('ROLE_MANAGER');
-INSERT INTO role (name) VALUES ('ROLE_EMPLOYER');
-INSERT INTO role (name) VALUES ('ROLE_USER');
+INSERT INTO role (id, name) VALUES (UUID(), 'ROLE_ADMIN');
+INSERT INTO role (id, name) VALUES (UUID(), 'ROLE_MANAGER');
+INSERT INTO role (id, name) VALUES (UUID(), 'ROLE_EMPLOYER');
+INSERT INTO role (id, name) VALUES (UUID(), 'ROLE_USER');

@@ -12,9 +12,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SeatForSeanceResponse {
-
-    private String id;
+public class SeatRequest {
 
     private Long number;
 
@@ -24,5 +22,4 @@ public class SeatForSeanceResponse {
 
     private boolean broken;
 
-    private boolean available;
 }

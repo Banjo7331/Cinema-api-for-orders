@@ -2,18 +2,20 @@ package springboot.cinemaapi.cinemaapifororders.application.service.room;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import springboot.cinemaapi.cinemaapifororders.application.dto.room.SeatRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.room.SeatResponse;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Reservation;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Repertoire;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
 import springboot.cinemaapi.cinemaapifororders.domain.model.room.Room;
 import springboot.cinemaapi.cinemaapifororders.domain.model.room.Seat;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.*;
-import springboot.cinemaapi.cinemaapifororders.application.dto.room.SeatDto;
 import springboot.cinemaapi.cinemaapifororders.application.dto.room.SeatForSeanceResponse;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.room.SeatService;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,16 +43,18 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public List<SeatDto> findSeatsByRoomId(Long id) {
+    public List<SeatResponse> findSeatsByRoomId(String id) {
         List<Seat> seats = seatRepository.findAllByRoomId(id);
 
-        return seats.stream().map(seat -> modelMapper.map(seat,SeatDto.class)).collect(Collectors.toList());
+        return seats.stream().map(seat -> modelMapper.map(seat,SeatResponse.class)).collect(Collectors.toList());
     }
 
     @Override
-    public List<SeatForSeanceResponse> findSeatsForSeance(Long repertoireId, Long seanceId) {
+    public List<SeatForSeanceResponse> findSeatsForSeance(String repertoireId, String seanceId) {
+
         Repertoire repertoire = repertoireRepository.findById(repertoireId)
                 .orElseThrow(() -> new RuntimeException("Repertoire not found"));
+
         Seance seance = seanceRepository.findById(seanceId)
                 .orElseThrow(() -> new RuntimeException("Seance not found"));
 
@@ -59,7 +63,7 @@ public class SeatServiceImpl implements SeatService {
         }
 
         List<Reservation> reservationList = reservationRepository.findReservationsBySeance(seance);
-        Set<Long> reservedSeatIds = reservationList.stream()
+        Set<String> reservedSeatIds = reservationList.stream()
                 .flatMap(reservation -> reservation.getSeats().stream())
                 .map(Seat::getId)
                 .collect(Collectors.toSet());
@@ -81,13 +85,13 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public SeatDto updateSeat(Long seatId,SeatDto seatDto) {
+    public SeatResponse updateSeat(String seatId, SeatRequest seatDto) {
 
         Seat seat = seatRepository.findById(seatId).orElseThrow(() -> new RuntimeException("Seat not found with id: "+seatId));
 
         modelMapper.map(seatDto,seat);
 
-        Long roomId = seatDto.getRoomId();
+        String roomId = seatDto.getRoomId();
         if(roomId != null && roomRepository.existsById(roomId)){
             Room room = roomRepository.findById(seatDto.getRoomId()).orElseThrow(() -> new RuntimeException("Room not found with id: "+seatDto.getRoomId()));
 
@@ -97,7 +101,7 @@ public class SeatServiceImpl implements SeatService {
 
         Seat updateSeat = seatRepository.save(seat);
 
-        return modelMapper.map(updateSeat,SeatDto.class);
+        return modelMapper.map(updateSeat,SeatResponse.class);
     }
 
 }

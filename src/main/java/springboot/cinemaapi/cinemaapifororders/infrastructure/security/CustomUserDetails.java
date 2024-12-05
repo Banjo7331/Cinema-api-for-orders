@@ -5,16 +5,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class CustomUserDetails implements UserDetails {
 
     @Getter
-    private Long id;  // Dodajemy ID użytkownika
+    private String id;  // Dodajemy ID użytkownika
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(String id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.password = password;

@@ -7,8 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import springboot.cinemaapi.cinemaapifororders.application.dto.MovieDto;
+import springboot.cinemaapi.cinemaapifororders.application.dto.movie.MovieRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.movie.MovieResponse;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.MovieService;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/movie")
@@ -21,31 +24,31 @@ public class MovieController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<MovieDto>> getAllMovies(@RequestParam(defaultValue = "0") Integer page,
-                                                        @RequestParam(defaultValue = "10") Integer size) {
-        Page<MovieDto> movies = movieService.findAllMovies(page,size);
+    public ResponseEntity<Page<MovieResponse>> getAllMovies(@RequestParam(defaultValue = "0") Integer page,
+                                                            @RequestParam(defaultValue = "10") Integer size) {
+        Page<MovieResponse> movies = movieService.findAllMovies(page,size);
 
         return ResponseEntity.ok(movies);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MovieDto> getMovieById(@PathVariable Long id) {
+    public ResponseEntity<MovieResponse> getMovieById(@PathVariable String id) {
 
         return ResponseEntity.ok(movieService.findMovieById(id));
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PostMapping
-    public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody MovieDto movie) {
+    public ResponseEntity<MovieResponse> createMovie(@Valid @RequestBody MovieRequest movie) {
         return new ResponseEntity<>(movieService.addMovie(movie),HttpStatus.CREATED);
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PutMapping("/{id}")
-    public ResponseEntity<MovieDto> updateMovie(@Valid @RequestBody MovieDto movie, @PathVariable Long id) {
+    public ResponseEntity<MovieResponse> updateMovie(@Valid @RequestBody MovieRequest movie, @PathVariable String id) {
         return ResponseEntity.ok(movieService.updateMovie(id,movie));
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMovie(@PathVariable Long id) {
+    public ResponseEntity<String> deleteMovie(@PathVariable String id) {
         movieService.deleteMovie(id);
 
         return ResponseEntity.ok("Deleted movie successfully");

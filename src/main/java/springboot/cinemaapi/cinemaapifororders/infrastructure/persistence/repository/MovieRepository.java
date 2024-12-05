@@ -9,8 +9,9 @@ import springboot.cinemaapi.cinemaapifororders.domain.enums.MovieCategory;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
-public interface MovieRepository extends JpaRepository<Movie, Long> {
+public interface MovieRepository extends JpaRepository<Movie, String> {
 
     @Modifying
     void deleteMoviesByEndOfPlayingDateBefore(LocalDate endOfPlayingDate);

@@ -18,6 +18,7 @@ import springboot.cinemaapi.cinemaapifororders.domain.model.room.Seat;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -28,8 +29,9 @@ import java.util.List;
 public class Reservation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "CHAR(36)", unique = true, nullable = false)
+    private String id;
 
     @NotNull
     @Min(value = 1, message = "numberOfViewers must be at least 1")

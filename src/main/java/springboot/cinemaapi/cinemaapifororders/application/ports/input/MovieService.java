@@ -1,18 +1,20 @@
 package springboot.cinemaapi.cinemaapifororders.application.ports.input;
 
 import org.springframework.data.domain.Page;
-import springboot.cinemaapi.cinemaapifororders.application.dto.MovieDto;
+import springboot.cinemaapi.cinemaapifororders.application.dto.movie.MovieRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.movie.MovieResponse;
 import springboot.cinemaapi.cinemaapifororders.domain.enums.MovieCategory;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface MovieService {
-    Page<MovieDto> findAllMovies(Integer page, Integer size);
-    MovieDto findMovieById(Long movieId);
-    List<MovieDto> findMoviesByMovieCategory(MovieCategory movieCategory);
-    MovieDto addMovie(MovieDto movieDto);
-    MovieDto updateMovie(Long movieId,MovieDto movieDto);
-    void deleteMovie(Long movieId);
+    Page<MovieResponse> findAllMovies(Integer page, Integer size);
+    MovieResponse findMovieById(String movieId);
+    List<MovieResponse> findMoviesByMovieCategory(MovieCategory movieCategory);
+    MovieResponse addMovie(MovieRequest movieDto);
+    MovieResponse updateMovie(String movieId, MovieRequest movieDto);
+    void deleteMovie(String movieId);
     void deleteAllMovies();
     void deleteExpiredMovies();
 }

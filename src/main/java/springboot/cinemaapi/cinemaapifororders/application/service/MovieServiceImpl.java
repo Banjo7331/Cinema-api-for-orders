@@ -5,10 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.cinemaapi.cinemaapifororders.application.dto.movie.MovieRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.movie.MovieResponse;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Movie;
 import springboot.cinemaapi.cinemaapifororders.domain.model.Reservation;
 import springboot.cinemaapi.cinemaapifororders.domain.model.repertoire.Seance;
-import springboot.cinemaapi.cinemaapifororders.application.dto.MovieDto;
 import springboot.cinemaapi.cinemaapifororders.domain.enums.MovieCategory;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.MovieRepository;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.MovieService;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Pageable;
 @Service
@@ -35,25 +37,25 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Page<MovieDto> findAllMovies(Integer page, Integer size) {
+    public Page<MovieResponse> findAllMovies(Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<MovieDto> movies = movieRepository.findAll(pageable).map(movie -> modelMapper.map(movie, MovieDto.class));
+        Page<MovieResponse> movies = movieRepository.findAll(pageable).map(movie -> modelMapper.map(movie, MovieResponse.class));
 
         return  movies;
     }
 
     @Override
-    public MovieDto findMovieById(Long movieId) {
+    public MovieResponse findMovieById(String movieId) {
         Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new RuntimeException("Movie not found"));
 
-        return modelMapper.map(movie, MovieDto.class);
+        return modelMapper.map(movie, MovieResponse.class);
     }
 
     @Override
-    public List<MovieDto> findMoviesByMovieCategory(MovieCategory movieCategory) {
-        List<MovieDto> movies = movieRepository.findMoviesByMovieCategory(movieCategory).stream().map(movie -> modelMapper.map(movie, MovieDto.class))
+    public List<MovieResponse> findMoviesByMovieCategory(MovieCategory movieCategory) {
+        List<MovieResponse> movies = movieRepository.findMoviesByMovieCategory(movieCategory).stream().map(movie -> modelMapper.map(movie, MovieResponse.class))
                 .collect(Collectors.toList());
 
         return  movies;
@@ -61,27 +63,27 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public MovieDto addMovie(MovieDto movieDto) {
+    public MovieResponse addMovie(MovieRequest movieDto) {
         Movie movie = modelMapper.map(movieDto, Movie.class);
 
         Movie cretedMovie = movieRepository.save(movie);
 
-        return modelMapper.map(cretedMovie, MovieDto.class);
+        return modelMapper.map(cretedMovie, MovieResponse.class);
     }
 
     @Override
-    public MovieDto updateMovie(Long movieId, MovieDto movieDto) {
+    public MovieResponse updateMovie(String movieId, MovieRequest movieDto) {
         Movie movie = movieRepository.findById(movieId).orElseThrow(()-> new RuntimeException("Movie not found"));
 
         modelMapper.map(movieDto, movie);
 
         Movie updatedMovie = movieRepository.save(movie);
 
-        return modelMapper.map(updatedMovie, MovieDto.class);
+        return modelMapper.map(updatedMovie, MovieResponse.class);
     }
 
     @Override
-    public void deleteMovie(Long movieId) {
+    public void deleteMovie(String movieId) {
         Movie movie = movieRepository.findById(movieId).orElseThrow(()-> new RuntimeException("Movie not found"));
 
         List<Seance> seances = movie.getSeances();

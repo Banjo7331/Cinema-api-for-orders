@@ -7,11 +7,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import springboot.cinemaapi.cinemaapifororders.application.dto.order.ProductRequest;
+import springboot.cinemaapi.cinemaapifororders.application.dto.order.ProductResponse;
 import springboot.cinemaapi.cinemaapifororders.domain.model.order.Product;
-import springboot.cinemaapi.cinemaapifororders.application.dto.order.ProductDto;
 import springboot.cinemaapi.cinemaapifororders.domain.enums.ProductType;
 import springboot.cinemaapi.cinemaapifororders.infrastructure.persistence.repository.ProductRepository;
 import springboot.cinemaapi.cinemaapifororders.application.ports.input.order.ProductService;
+
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -26,12 +29,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto findProductById(Long id) {
-        return modelMapper.map(productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product not found")), ProductDto.class);
+    public ProductResponse findProductById(String id) {
+        return modelMapper.map(productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product not found")), ProductResponse.class);
     }
 
     @Override
-    public Page<ProductDto> findProducts(ProductType type, Integer page, Integer size) {
+    public Page<ProductResponse> findProducts(ProductType type, Integer page, Integer size) {
 
         Page<Product> products;
 
@@ -42,23 +45,21 @@ public class ProductServiceImpl implements ProductService {
             products = productRepository.findAllProductByProductType(type,pageable);
         }
 
-        return products.map(product ->modelMapper.map(product, ProductDto.class));
+        return products.map(product ->modelMapper.map(product, ProductResponse.class));
 
     }
 
     @Transactional
     @Override
-    public ProductDto addProduct(ProductDto productDto) {
-        System.out.println(productDto.toString());
+    public ProductResponse addProduct(ProductRequest productDto) {
         Product product = modelMapper.map(productDto, Product.class);
 
-        return modelMapper.map(productRepository.save(product), ProductDto.class);
+        return modelMapper.map(productRepository.save(product), ProductResponse.class);
     }
 
     @Transactional
     @Override
-    public ProductDto updateProduct(Long id, ProductDto productDto) {
-        System.out.println(productDto);
+    public ProductResponse updateProduct(String id, ProductRequest productDto) {
         Product product = productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product not found"));
 
         modelMapper.map(productDto, product);
@@ -66,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
         Product updateProduct = productRepository.save(product);
 
 
-        return modelMapper.map(updateProduct, ProductDto.class);
+        return modelMapper.map(updateProduct, ProductResponse.class);
     }
 
 }
